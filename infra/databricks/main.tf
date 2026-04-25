@@ -8,8 +8,8 @@ terraform {
 }
 
 provider "databricks" {
-  host  = var.workspace_url
-  token = var.databricks_token
+  host = var.workspace_url
+  # auth via Azure CLI automatically (az login)
 }
 
 # 1. Storage Credential — links the managed identity to Unity Catalog

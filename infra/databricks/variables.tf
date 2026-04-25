@@ -19,13 +19,6 @@ variable "managed_identity_id" {
   type        = string
 }
 
-# Databricks PAT — generate in workspace: User Settings → Developer → Access tokens
-variable "databricks_token" {
-  description = "Databricks personal access token."
-  type        = string
-  sensitive   = true
-}
-
 variable "catalog_name" {
   description = "Unity Catalog name."
   type        = string
