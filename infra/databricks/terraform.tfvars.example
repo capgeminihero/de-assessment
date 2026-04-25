@@ -4,5 +4,6 @@ storage_account_name = ""
 access_connector_id  = ""
 managed_identity_id  = ""
 
+environment  = "dev"
 catalog_name = "de_assessment"
 project      = "de-assessment"

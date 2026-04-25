@@ -19,8 +19,18 @@ variable "managed_identity_id" {
   type        = string
 }
 
+variable "environment" {
+  description = "Deployment environment (dev, acc, prod)."
+  type        = string
+  default     = "dev"
+  validation {
+    condition     = contains(["dev", "acc", "prod"], var.environment)
+    error_message = "Must be dev, acc, or prod."
+  }
+}
+
 variable "catalog_name" {
-  description = "Unity Catalog name."
+  description = "Base Unity Catalog name — environment is appended automatically."
   type        = string
   default     = "de_assessment"
 }

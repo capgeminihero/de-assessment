@@ -31,11 +31,11 @@ resource "databricks_external_location" "layers" {
   credential_name = databricks_storage_credential.main.id
 }
 
-# 3. Unity Catalog — uses raw container path as storage root
+# 3. Unity Catalog — environment-scoped (de_assessment_dev / acc / prod)
 
 resource "databricks_catalog" "main" {
-  name         = var.catalog_name
-  storage_root = "abfss://raw@${var.storage_account_name}.dfs.core.windows.net/unity-catalog"
+  name         = "${var.catalog_name}_${var.environment}"
+  storage_root = "abfss://raw@${var.storage_account_name}.dfs.core.windows.net/unity-catalog/${var.environment}"
 
   depends_on = [databricks_external_location.layers]
 }
