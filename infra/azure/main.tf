@@ -8,6 +8,10 @@ terraform {
       source  = "hashicorp/random"
       version = "~> 3.6"
     }
+    azuread = {
+      source  = "hashicorp/azuread"
+      version = "~> 3.0"
+    }
   }
 }
 
@@ -15,7 +19,10 @@ provider "azurerm" {
   features {}
 }
 
+provider "azuread" {}
+
 data "azurerm_client_config" "current" {}
+data "azuread_client_config" "current" {}
 
 # 1. Resource Group
 
@@ -30,6 +37,31 @@ resource "azurerm_user_assigned_identity" "main" {
   name                = "uai-${var.project}"
   resource_group_name = azurerm_resource_group.rg.name
   location            = azurerm_resource_group.rg.location
+}
+
+# 2b. Entra ID Security Group — authoritative identity source for Databricks access
+#
+# "DE-Dev-Team" is created here in Microsoft Entra ID, not inside Databricks.
+# Azure Databricks workspaces created after August 2025 use Automatic Identity
+# Management: they continuously mirror Entra ID groups into the Databricks account
+# with no SCIM token, no enterprise app, and no account_id required.
+#
+# Membership is managed here. Removing a user from this group in Entra ID
+# automatically revokes their Databricks and Unity Catalog access.
+# In acc/prod: this block is skipped (count=0). The "DE-Dev-Team" group
+# already exists in Entra ID, managed by the IAM team.
+
+resource "azuread_group" "dev_team" {
+  count            = var.environment == "dev" ? 1 : 0
+  display_name     = "DE-Dev-Team"
+  security_enabled = true
+  mail_enabled     = false
+}
+
+resource "azuread_group_member" "deployer" {
+  count            = var.environment == "dev" ? 1 : 0
+  group_object_id  = azuread_group.dev_team[0].object_id
+  member_object_id = data.azuread_client_config.current.object_id
 }
 
 # 3. Access Connector for Azure Databricks
@@ -69,12 +101,28 @@ resource "azurerm_storage_data_lake_gen2_filesystem" "layers" {
   storage_account_id = azurerm_storage_account.storage.id
 }
 
-# 6. Role Assignments — least privilege per container
+# Unity Catalog managed storage — separate from external data containers.
+# External locations cover raw/bronze/silver/gold from their root URLs.
+# Databricks rejects a catalog storage_root that overlaps with any external
+# location (either as prefix or child path). A dedicated container avoids this.
+resource "azurerm_storage_data_lake_gen2_filesystem" "uc_managed" {
+  name               = "uc-managed"
+  storage_account_id = azurerm_storage_account.storage.id
+}
+
+# 6. Role Assignment — Storage Blob Data Owner at storage account scope
+#
+# Storage Blob Data Owner is required (not Contributor) because Databricks
+# Unity Catalog credential vending calls Azure's GetUserDelegationKey API to
+# generate short-lived SAS tokens for Spark executors. That API is a storage
+# account level operation and requires the generateUserDelegationKey action,
+# which is only included in Storage Blob Data Owner, not Contributor.
+# Scope must also be at storage account level (not per-container) because
+# GetUserDelegationKey is a blobServices-level call, not container-level.
 
 resource "azurerm_role_assignment" "storage_access" {
-  for_each             = toset(["raw", "bronze", "silver", "gold"])
-  scope                = "${azurerm_storage_account.storage.id}/blobServices/default/containers/${each.key}"
-  role_definition_name = "Storage Blob Data Contributor"
+  scope                = azurerm_storage_account.storage.id
+  role_definition_name = "Storage Blob Data Owner"
   principal_id         = azurerm_user_assigned_identity.main.principal_id
 }
 
@@ -119,6 +167,55 @@ resource "azurerm_role_assignment" "adf_kv" {
   principal_id         = azurerm_data_factory.adf.identity[0].principal_id
 }
 
+# 10. Audit Logging — Log Analytics Workspace
+#
+# Centralised sink for all diagnostic logs. Captures:
+#   - Databricks: Unity Catalog events, notebook runs, cluster creation, secret access
+#   - Key Vault:  every secret read/write/delete operation
+#   - Storage:    every blob read/write/delete (who touched what data and when)
+# Retention: 90 days (extend to 365+ for regulated industries).
+# This is a hard requirement for SOC2, ISO 27001, and GDPR compliance.
+
+resource "azurerm_log_analytics_workspace" "audit" {
+  name                = "law-${var.project}"
+  resource_group_name = azurerm_resource_group.rg.name
+  location            = azurerm_resource_group.rg.location
+  sku                 = "PerGB2018"
+  retention_in_days   = 90
+}
+
+resource "azurerm_monitor_diagnostic_setting" "databricks_audit" {
+  name                       = "diag-${var.project}-databricks"
+  target_resource_id         = azurerm_databricks_workspace.this.id
+  log_analytics_workspace_id = azurerm_log_analytics_workspace.audit.id
+
+  enabled_log { category_group = "allLogs" }
+}
+
+resource "azurerm_monitor_diagnostic_setting" "keyvault_audit" {
+  name                       = "diag-${var.project}-kv"
+  target_resource_id         = azurerm_key_vault.kv.id
+  log_analytics_workspace_id = azurerm_log_analytics_workspace.audit.id
+
+  enabled_log { category_group = "allLogs" }
+  metric {
+    category = "AllMetrics"
+    enabled  = true
+  }
+}
+
+resource "azurerm_monitor_diagnostic_setting" "storage_audit" {
+  name                       = "diag-${var.project}-storage"
+  target_resource_id         = "${azurerm_storage_account.storage.id}/blobServices/default"
+  log_analytics_workspace_id = azurerm_log_analytics_workspace.audit.id
+
+  enabled_log { category_group = "allLogs" }
+  metric {
+    category = "Transaction"
+    enabled  = true
+  }
+}
+
 # --- Outputs (used as inputs for infra/databricks) ---
 
 output "workspace_url" {
@@ -151,4 +248,12 @@ output "key_vault_uri" {
 
 output "adf_name" {
   value = azurerm_data_factory.adf.name
+}
+
+output "log_analytics_workspace_id" {
+  value = azurerm_log_analytics_workspace.audit.id
+}
+
+output "entra_dev_team_object_id" {
+  value = var.environment == "dev" ? azuread_group.dev_team[0].object_id : null
 }
