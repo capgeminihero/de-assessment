@@ -1,0 +1,11 @@
+# Copy values from: terraform -chdir=infra/azure output
+workspace_url        = ""
+storage_account_name = ""
+access_connector_id  = ""
+managed_identity_id  = ""
+
+# Generate in Databricks: User Settings → Developer → Access tokens
+databricks_token = ""
+
+catalog_name = "de_assessment"
+project      = "de-assessment"

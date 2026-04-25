@@ -14,12 +14,6 @@ variable "project" {
   default     = "de-assessment"
 }
 
-variable "catalog_name" {
-  description = "Unity Catalog name. Combined with environment to avoid cross-environment collisions."
-  type        = string
-  default     = "de_assessment"
-}
-
 variable "location" {
   description = "Azure region for all resources."
   type        = string
