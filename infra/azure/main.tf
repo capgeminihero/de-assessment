@@ -38,22 +38,7 @@ resource "azurerm_user_assigned_identity" "main" {
   location            = azurerm_resource_group.rg.location
 }
 
-# 2b. Entra ID Security Group — authoritative identity source for Databricks access
-#
-# "DE-Dev-Team" is created here in Microsoft Entra ID, not inside Databricks.
-# Azure Databricks workspaces created after August 2025 use Automatic Identity
-# Management: they continuously mirror Entra ID groups into the Databricks account
-# with no SCIM token, no enterprise app, and no account_id required.
-#
-# Membership is managed here. Removing a user from this group in Entra ID
-# automatically revokes their Databricks and Unity Catalog access.
-# In acc/prod: this block is skipped (count=0). The "DE-Dev-Team" group
-# already exists in Entra ID, managed by the IAM team.
-
-# Entra ID groups — looked up as data sources only.
-# Groups are owned and created by infra/iam/ (the IAM team module).
-# The platform team (this module) references them for Azure RBAC assignments
-# but never creates or modifies IAM objects — separation of duties.
+# Entra ID groups — data sources only, created by infra/iam/
 
 data "azuread_group" "dev_team" {
   display_name     = "DE-Dev-Team"
@@ -116,15 +101,7 @@ resource "azurerm_storage_data_lake_gen2_filesystem" "uc_managed" {
   storage_account_id = azurerm_storage_account.storage.id
 }
 
-# 6. Role Assignment — Storage Blob Data Owner at storage account scope
-#
-# Storage Blob Data Owner is required (not Contributor) because Databricks
-# Unity Catalog credential vending calls Azure's GetUserDelegationKey API to
-# generate short-lived SAS tokens for Spark executors. That API is a storage
-# account level operation and requires the generateUserDelegationKey action,
-# which is only included in Storage Blob Data Owner, not Contributor.
-# Scope must also be at storage account level (not per-container) because
-# GetUserDelegationKey is a blobServices-level call, not container-level.
+# Storage Blob Data Owner — required for Unity Catalog credential vending (GetUserDelegationKey)
 
 resource "azurerm_role_assignment" "storage_access" {
   scope                = azurerm_storage_account.storage.id
@@ -132,15 +109,7 @@ resource "azurerm_role_assignment" "storage_access" {
   principal_id         = azurerm_user_assigned_identity.main.principal_id
 }
 
-# 7. Virtual Network
-#
-# The VNet hosts three subnet tiers:
-#   snet-private-endpoints : private endpoints for storage + Databricks UI/API
-#   snet-dbx-host          : Databricks host (public) subnet — cluster VMs NIC 1
-#   snet-dbx-container     : Databricks container (private) subnet — cluster VMs NIC 2
-# Both Databricks subnets are delegated to Microsoft.Databricks/workspaces.
-# Azure Databricks auto-manages NSG rules on delegated subnets.
-# NAT Gateway provides stable egress IPs (mandatory for new VNets after March 2026).
+# VNet — 3 subnets: private-endpoints, dbx-host, dbx-container
 
 resource "azurerm_virtual_network" "main" {
   name                = "vnet-${var.project}"
@@ -194,9 +163,7 @@ resource "azurerm_subnet" "dbx_container" {
   }
 }
 
-# NSG — Databricks manages required inbound/outbound rules automatically via
-# subnet delegation. We create the NSG and associate it; Azure Databricks
-# populates the required rules when the workspace is provisioned.
+# NSG — rules auto-populated by Databricks via subnet delegation
 resource "azurerm_network_security_group" "dbx" {
   name                = "nsg-${var.project}-dbx"
   resource_group_name = azurerm_resource_group.rg.name
@@ -213,9 +180,7 @@ resource "azurerm_subnet_network_security_group_association" "dbx_container" {
   network_security_group_id = azurerm_network_security_group.dbx.id
 }
 
-# NAT Gateway — required for new VNets after March 31 2026 (Microsoft retired
-# default outbound access). Provides stable public egress IPs for cluster nodes
-# (TVmaze API calls, library installs, etc.).
+# NAT Gateway — required for outbound internet access (default outbound retired March 2026)
 resource "azurerm_public_ip" "nat_gw" {
   name                = "pip-${var.project}-natgw"
   resource_group_name = azurerm_resource_group.rg.name
@@ -246,12 +211,7 @@ resource "azurerm_subnet_nat_gateway_association" "dbx_container" {
   nat_gateway_id = azurerm_nat_gateway.main.id
 }
 
-# 8. Databricks Workspace — Premium, VNet-injected, no public IPs on cluster nodes
-#
-# VNet injection deploys cluster VMs inside our VNet (snet-dbx-host/container),
-# giving them a private path to storage via the private endpoints in snet-private-endpoints.
-# Secure Cluster Connectivity (no_public_ip=true) removes public IPs from all
-# cluster nodes — traffic flows through the Databricks relay on the backbone.
+# Databricks Workspace — Premium, VNet-injected, no public IPs (Secure Cluster Connectivity)
 
 resource "azurerm_databricks_workspace" "this" {
   name                        = "${var.project}-ws"
@@ -302,14 +262,7 @@ resource "azurerm_role_assignment" "adf_kv" {
   principal_id         = azurerm_data_factory.adf.identity[0].principal_id
 }
 
-# 10. Audit Logging — Log Analytics Workspace
-#
-# Centralised sink for all diagnostic logs. Captures:
-#   - Databricks: Unity Catalog events, notebook runs, cluster creation, secret access
-#   - Key Vault:  every secret read/write/delete operation
-#   - Storage:    every blob read/write/delete (who touched what data and when)
-# Retention: 90 days (extend to 365+ for regulated industries).
-# This is a hard requirement for SOC2, ISO 27001, and GDPR compliance.
+# Audit logging — Log Analytics sink for Databricks, Key Vault, Storage (90 day retention)
 
 resource "azurerm_log_analytics_workspace" "audit" {
   name                = "law-${var.project}"
@@ -345,12 +298,7 @@ resource "azurerm_monitor_diagnostic_setting" "storage_audit" {
   enabled_metric { category = "Transaction" }
 }
 
-# 11. Private Endpoints — Storage Account (blob + dfs)
-#
-# ADLS Gen2 exposes two sub-resources:
-#   - blob: general blob API (used by some SDK paths)
-#   - dfs:  Data Lake Storage Gen2 filesystem API (abfss:// uses this)
-# Both are needed. Unity Catalog credential vending uses the dfs endpoint.
+# Private endpoints — storage blob + dfs (both required for abfss:// and credential vending)
 
 resource "azurerm_private_endpoint" "storage_blob" {
   name                = "pe-${var.project}-storage-blob"
@@ -390,13 +338,7 @@ resource "azurerm_private_endpoint" "storage_dfs" {
   }
 }
 
-# 12. Private Endpoint — Databricks UI/API (front-end) + Compute Plane (back-end)
-#
-# With VNet injection, cluster nodes live in our VNet. A single private endpoint
-# using subresource "databricks_ui_api" deployed in our VNet covers BOTH:
-#   - Front-end: browser/REST API → Databricks control plane
-#   - Back-end:  cluster nodes  → Databricks control plane (secure cluster relay)
-# All control-plane traffic stays on the Microsoft backbone, never public internet.
+# Private endpoint — Databricks UI/API (covers both front-end and cluster relay)
 
 resource "azurerm_private_endpoint" "databricks_ui_api" {
   name                = "pe-${var.project}-databricks-ui-api"
@@ -417,18 +359,14 @@ resource "azurerm_private_endpoint" "databricks_ui_api" {
   }
 }
 
-# Browser authentication endpoint — dedicated PE for browser auth flows.
-# Microsoft recommends isolating this for resilience: if the main workspace PE
-# is deleted, SSO/browser login still works via this endpoint.
+# Browser authentication endpoint — isolated for resilience
 resource "azurerm_private_endpoint" "databricks_auth" {
   name                = "pe-${var.project}-databricks-auth"
   resource_group_name = azurerm_resource_group.rg.name
   location            = azurerm_resource_group.rg.location
   subnet_id           = azurerm_subnet.private_endpoints.id
 
-  # Must be sequential — concurrent PE creation triggers ConcurrentUpdateError
-  # because both try to update the Databricks workspace resource simultaneously.
-  depends_on = [azurerm_private_endpoint.databricks_ui_api]
+  depends_on = [azurerm_private_endpoint.databricks_ui_api] # sequential to avoid ConcurrentUpdateError
 
   private_service_connection {
     name                           = "psc-databricks-auth"
@@ -443,11 +381,7 @@ resource "azurerm_private_endpoint" "databricks_auth" {
   }
 }
 
-# 13. Private DNS Zones
-#
-# Without DNS zones, clients resolve the storage/Databricks FQDNs to public IPs
-# even when a private endpoint exists. These zones override resolution for any
-# client linked to the VNet, returning the private IP of the endpoint NIC instead.
+# Private DNS zones — override public FQDN resolution to private endpoint IPs
 
 resource "azurerm_private_dns_zone" "blob" {
   name                = "privatelink.blob.core.windows.net"

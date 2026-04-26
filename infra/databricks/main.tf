@@ -7,26 +7,22 @@ terraform {
   }
 }
 
-# Workspace-level provider — used for all workspace and Unity Catalog resources
+# Workspace provider — auth via Azure CLI
 provider "databricks" {
   host = var.workspace_url
-  # auth via Azure CLI (az login)
 }
 
-# Account-level provider — used only for account-level group management
-# Authenticates as the terraform-databricks-accounts SP (account admin)
+# Accounts provider — used for account-level group management (SP auth)
 provider "databricks" {
-  alias         = "accounts"
-  host          = "https://accounts.azuredatabricks.net"
-  account_id    = var.databricks_account_id
+  alias               = "accounts"
+  host                = "https://accounts.azuredatabricks.net"
+  account_id          = var.databricks_account_id
   azure_client_id     = var.databricks_client_id
   azure_client_secret = var.databricks_client_secret
   azure_tenant_id     = "186c3021-d0e1-4353-b0d9-d9b642e5dd44"
 }
 
-# 1. Storage Credential — links the managed identity to Unity Catalog
-# The managed identity is the only identity that ever touches ADLS directly.
-# All user access to storage is mediated through Unity Catalog.
+# Storage credential — links managed identity to Unity Catalog
 
 resource "databricks_storage_credential" "main" {
   name = "sc-${var.project}"
@@ -36,7 +32,7 @@ resource "databricks_storage_credential" "main" {
   }
 }
 
-# 2. External Locations — one per medallion layer
+# External locations — one per medallion layer
 
 resource "databricks_external_location" "layers" {
   for_each        = toset(["raw", "bronze", "silver", "gold"])
@@ -45,7 +41,7 @@ resource "databricks_external_location" "layers" {
   credential_name = databricks_storage_credential.main.id
 }
 
-# 3. Unity Catalog — environment-scoped (de_assessment_dev / acc / prod)
+# Unity Catalog — environment-scoped catalog
 
 resource "databricks_catalog" "main" {
   name          = "${var.catalog_name}_${var.environment}"
@@ -54,15 +50,11 @@ resource "databricks_catalog" "main" {
   # from actual bronze Delta table data). Bronze external location covers this
   # path and has CREATE_MANAGED_STORAGE granted to the deployer.
   storage_root = "abfss://bronze@${var.storage_account_name}.dfs.core.windows.net/_catalog_managed/"
-
-  depends_on = [databricks_external_location.layers]
+  depends_on   = [databricks_external_location.layers]
 }
 
-# 4. Groups
+# Account-level groups — linked to Entra ID via external_id
 data "databricks_current_user" "deployer" {}
-
-# Create account-level groups via the accounts provider.
-# These are true account-level identities that Unity Catalog accepts as principals.
 resource "databricks_group" "dev_team" {
   provider     = databricks.accounts
   count        = var.environment == "dev" ? 1 : 0
@@ -85,8 +77,7 @@ resource "databricks_group" "analyst_team" {
   force        = true
 }
 
-# Assign account-level groups to this workspace so they can be used in notebooks,
-# jobs, and Unity Catalog GRANTs.
+# Assign groups to this workspace
 resource "databricks_mws_permission_assignment" "dev_team" {
   provider     = databricks.accounts
   count        = var.environment == "dev" ? 1 : 0
@@ -109,10 +100,7 @@ resource "databricks_mws_permission_assignment" "analyst_team" {
   permissions  = ["USER"]
 }
 
-# 5. Developer Grants (dev only)
-# Grants DE-Dev-Team access through Unity Catalog.
-# Unity Catalog uses the managed identity for all actual ADLS I/O.
-# In acc/prod: environment != "dev" so no grants are created.
+# External location grants — dev only
 
 resource "databricks_grants" "developer_external_locations" {
   for_each          = var.environment == "dev" ? databricks_external_location.layers : {}
@@ -124,14 +112,10 @@ resource "databricks_grants" "developer_external_locations" {
   }
 }
 
-# 6. Pipeline Service Principal
-# Automated jobs (ADF pipelines, scheduled notebooks) run as this service principal,
-# never as a user identity. Prevents production data being overwritten by accident
-# if a user account is modified or removed.
+# Pipeline service principal — used by ADF jobs
 
 resource "databricks_service_principal" "pipeline" {
   display_name = "sp-${var.project}-pipeline"
 }
 
-# Catalog-level grants are managed via SQL in the Bronze notebook
-# to satisfy assessment requirements for notebook-based access control demonstration.
+# Catalog grants are managed via SQL in the Bronze notebook
