@@ -48,16 +48,11 @@ resource "databricks_catalog" "main" {
 
 # 4. Developer group — Entra ID backed (dev only)
 #
-# "DE-Dev-Team" is created in Microsoft Entra ID by infra/azure/main.tf.
-# Azure Databricks (workspaces after Aug 2025) uses Automatic Identity Management
-# to continuously mirror Entra ID groups here at the ACCOUNT level.
-#
-# IMPORTANT: Unity Catalog grants (external locations, catalogs) require
-# ACCOUNT-LEVEL principals. A databricks_group created via a workspace-level
-# provider is workspace-level only and CANNOT be used in Unity Catalog grants.
-# Grants below use data.databricks_current_user.deployer.user_name (account-level)
-# until the Entra ID sync creates the account-level DE-Dev-Team group.
-# Once synced, replace user_name with "DE-Dev-Team" in all grant principals.
+# All three groups (DE-Dev-Team, Compliance-Team, DA-Analyst-Team) are created
+# in Microsoft Entra ID by infra/azure/main.tf. Azure Databricks Automatic
+# Identity Management continuously mirrors them into the Databricks account.
+# Only the workspace-level dev_team group is kept here for the force=true flag
+# to handle re-creation scenarios.
 
 data "databricks_current_user" "deployer" {}
 

@@ -1,0 +1,2265 @@
+{
+  "version": 4,
+  "terraform_version": "1.10.2",
+  "serial": 173,
+  "lineage": "a6986207-d8c4-cad9-a962-8799c8725fe9",
+  "outputs": {
+    "access_connector_id": {
+      "value": "/subscriptions/a64fd3aa-b704-4942-b259-96843424d4d1/resourceGroups/de-assessment/providers/Microsoft.Databricks/accessConnectors/ac-de-assessment",
+      "type": "string"
+    },
+    "adf_name": {
+      "value": "adf-de-assessment",
+      "type": "string"
+    },
+    "entra_dev_team_object_id": {
+      "value": "baa52807-c988-4c40-88c2-5cc77233c706",
+      "type": "string"
+    },
+    "key_vault_uri": {
+      "value": "https://kv-de-assessment.vault.azure.net/",
+      "type": "string"
+    },
+    "log_analytics_workspace_id": {
+      "value": "/subscriptions/a64fd3aa-b704-4942-b259-96843424d4d1/resourceGroups/de-assessment/providers/Microsoft.OperationalInsights/workspaces/law-de-assessment",
+      "type": "string"
+    },
+    "managed_identity_client_id": {
+      "value": "52d38412-e705-4157-a0c5-bf7db84090c6",
+      "type": "string"
+    },
+    "managed_identity_id": {
+      "value": "/subscriptions/a64fd3aa-b704-4942-b259-96843424d4d1/resourceGroups/de-assessment/providers/Microsoft.ManagedIdentity/userAssignedIdentities/uai-de-assessment",
+      "type": "string"
+    },
+    "storage_account_name": {
+      "value": "deassessmentd06fabcc",
+      "type": "string"
+    },
+    "workspace_id": {
+      "value": "/subscriptions/a64fd3aa-b704-4942-b259-96843424d4d1/resourceGroups/de-assessment/providers/Microsoft.Databricks/workspaces/de-assessment-ws",
+      "type": "string"
+    },
+    "workspace_url": {
+      "value": "adb-7405605920433807.7.azuredatabricks.net",
+      "type": "string"
+    }
+  },
+  "resources": [
+    {
+      "mode": "data",
+      "type": "azuread_client_config",
+      "name": "current",
+      "provider": "provider[\"registry.terraform.io/hashicorp/azuread\"]",
+      "instances": [
+        {
+          "schema_version": 0,
+          "attributes": {
+            "client_id": "04b07795-8ddb-461a-bbee-02f9e1bf7b46",
+            "id": "186c3021-d0e1-4353-b0d9-d9b642e5dd44-04b07795-8ddb-461a-bbee-02f9e1bf7b46-9c30edd5-e73a-44fc-8b02-ed78e182f0cd",
+            "object_id": "9c30edd5-e73a-44fc-8b02-ed78e182f0cd",
+            "tenant_id": "186c3021-d0e1-4353-b0d9-d9b642e5dd44",
+            "timeouts": null
+          },
+          "sensitive_attributes": []
+        }
+      ]
+    },
+    {
+      "mode": "data",
+      "type": "azurerm_client_config",
+      "name": "current",
+      "provider": "provider[\"registry.terraform.io/hashicorp/azurerm\"]",
+      "instances": [
+        {
+          "schema_version": 0,
+          "attributes": {
+            "client_id": "04b07795-8ddb-461a-bbee-02f9e1bf7b46",
+            "id": "Y2xpZW50Q29uZmlncy9jbGllbnRJZD0wNGIwNzc5NS04ZGRiLTQ2MWEtYmJlZS0wMmY5ZTFiZjdiNDY7b2JqZWN0SWQ9OWMzMGVkZDUtZTczYS00NGZjLThiMDItZWQ3OGUxODJmMGNkO3N1YnNjcmlwdGlvbklkPWE2NGZkM2FhLWI3MDQtNDk0Mi1iMjU5LTk2ODQzNDI0ZDRkMTt0ZW5hbnRJZD0xODZjMzAyMS1kMGUxLTQzNTMtYjBkOS1kOWI2NDJlNWRkNDQ=",
+            "object_id": "9c30edd5-e73a-44fc-8b02-ed78e182f0cd",
+            "subscription_id": "a64fd3aa-b704-4942-b259-96843424d4d1",
+            "tenant_id": "186c3021-d0e1-4353-b0d9-d9b642e5dd44",
+            "timeouts": null
+          },
+          "sensitive_attributes": []
+        }
+      ]
+    },
+    {
+      "mode": "managed",
+      "type": "azuread_group_member",
+      "name": "deployer",
+      "provider": "provider[\"registry.terraform.io/hashicorp/azuread\"]",
+      "instances": [
+        {
+          "index_key": 0,
+          "schema_version": 0,
+          "attributes": {
+            "group_object_id": "baa52807-c988-4c40-88c2-5cc77233c706",
+            "id": "baa52807-c988-4c40-88c2-5cc77233c706/member/9c30edd5-e73a-44fc-8b02-ed78e182f0cd",
+            "member_object_id": "9c30edd5-e73a-44fc-8b02-ed78e182f0cd",
+            "timeouts": null
+          },
+          "sensitive_attributes": [],
+          "private": "eyJlMmJmYjczMC1lY2FhLTExZTYtOGY4OC0zNDM2M2JjN2M0YzAiOnsiY3JlYXRlIjozMDAwMDAwMDAwMDAsImRlbGV0ZSI6MzAwMDAwMDAwMDAwLCJyZWFkIjozMDAwMDAwMDAwMDB9fQ==",
+          "dependencies": [
+            "azuread_group.dev_team",
+            "data.azuread_client_config.current"
+          ]
+        }
+      ]
+    },
+    {
+      "mode": "managed",
+      "type": "azurerm_data_factory",
+      "name": "adf",
+      "provider": "provider[\"registry.terraform.io/hashicorp/azurerm\"]",
+      "instances": [
+        {
+          "schema_version": 2,
+          "attributes": {
+            "customer_managed_key_id": "",
+            "customer_managed_key_identity_id": "",
+            "github_configuration": [],
+            "global_parameter": [],
+            "id": "/subscriptions/a64fd3aa-b704-4942-b259-96843424d4d1/resourceGroups/de-assessment/providers/Microsoft.DataFactory/factories/adf-de-assessment",
+            "identity": [
+              {
+                "identity_ids": [],
+                "principal_id": "00c05758-da81-4823-89bd-39774d4d9832",
+                "tenant_id": "186c3021-d0e1-4353-b0d9-d9b642e5dd44",
+                "type": "SystemAssigned"
+              }
+            ],
+            "location": "westeurope",
+            "managed_virtual_network_enabled": false,
+            "name": "adf-de-assessment",
+            "public_network_enabled": true,
+            "purview_id": "",
+            "resource_group_name": "de-assessment",
+            "tags": {},
+            "timeouts": null,
+            "vsts_configuration": []
+          },
+          "sensitive_attributes": [],
+          "private": "eyJlMmJmYjczMC1lY2FhLTExZTYtOGY4OC0zNDM2M2JjN2M0YzAiOnsiY3JlYXRlIjoxODAwMDAwMDAwMDAwLCJkZWxldGUiOjE4MDAwMDAwMDAwMDAsInJlYWQiOjMwMDAwMDAwMDAwMCwidXBkYXRlIjoxODAwMDAwMDAwMDAwfSwic2NoZW1hX3ZlcnNpb24iOiIyIn0=",
+          "dependencies": [
+            "azurerm_resource_group.rg"
+          ]
+        }
+      ]
+    },
+    {
+      "mode": "managed",
+      "type": "azurerm_databricks_access_connector",
+      "name": "main",
+      "provider": "provider[\"registry.terraform.io/hashicorp/azurerm\"]",
+      "instances": [
+        {
+          "schema_version": 0,
+          "attributes": {
+            "id": "/subscriptions/a64fd3aa-b704-4942-b259-96843424d4d1/resourceGroups/de-assessment/providers/Microsoft.Databricks/accessConnectors/ac-de-assessment",
+            "identity": [
+              {
+                "identity_ids": [
+                  "/subscriptions/a64fd3aa-b704-4942-b259-96843424d4d1/resourceGroups/de-assessment/providers/Microsoft.ManagedIdentity/userAssignedIdentities/uai-de-assessment"
+                ],
+                "principal_id": "",
+                "tenant_id": "",
+                "type": "UserAssigned"
+              }
+            ],
+            "location": "westeurope",
+            "name": "ac-de-assessment",
+            "resource_group_name": "de-assessment",
+            "tags": {},
+            "timeouts": null
+          },
+          "sensitive_attributes": [],
+          "private": "eyJlMmJmYjczMC1lY2FhLTExZTYtOGY4OC0zNDM2M2JjN2M0YzAiOnsiY3JlYXRlIjoxODAwMDAwMDAwMDAwLCJkZWxldGUiOjE4MDAwMDAwMDAwMDAsInJlYWQiOjMwMDAwMDAwMDAwMCwidXBkYXRlIjoxODAwMDAwMDAwMDAwfX0=",
+          "dependencies": [
+            "azurerm_resource_group.rg",
+            "azurerm_user_assigned_identity.main"
+          ]
+        }
+      ]
+    },
+    {
+      "mode": "managed",
+      "type": "azurerm_databricks_workspace",
+      "name": "this",
+      "provider": "provider[\"registry.terraform.io/hashicorp/azurerm\"]",
+      "instances": [
+        {
+          "schema_version": 0,
+          "attributes": {
+            "access_connector_id": null,
+            "custom_parameters": [
+              {
+                "machine_learning_workspace_id": "",
+                "nat_gateway_name": "",
+                "no_public_ip": true,
+                "private_subnet_name": "snet-dbx-container",
+                "private_subnet_network_security_group_association_id": "/subscriptions/a64fd3aa-b704-4942-b259-96843424d4d1/resourceGroups/de-assessment/providers/Microsoft.Network/virtualNetworks/vnet-de-assessment/subnets/snet-dbx-container",
+                "public_ip_name": "",
+                "public_subnet_name": "snet-dbx-host",
+                "public_subnet_network_security_group_association_id": "/subscriptions/a64fd3aa-b704-4942-b259-96843424d4d1/resourceGroups/de-assessment/providers/Microsoft.Network/virtualNetworks/vnet-de-assessment/subnets/snet-dbx-host",
+                "storage_account_name": "dbstoragejgjuekvmj3ia4",
+                "storage_account_sku_name": "Standard_ZRS",
+                "virtual_network_id": "/subscriptions/a64fd3aa-b704-4942-b259-96843424d4d1/resourceGroups/de-assessment/providers/Microsoft.Network/virtualNetworks/vnet-de-assessment",
+                "vnet_address_prefix": ""
+              }
+            ],
+            "customer_managed_key_enabled": false,
+            "default_storage_firewall_enabled": null,
+            "disk_encryption_set_id": "",
+            "enhanced_security_compliance": [],
+            "id": "/subscriptions/a64fd3aa-b704-4942-b259-96843424d4d1/resourceGroups/de-assessment/providers/Microsoft.Databricks/workspaces/de-assessment-ws",
+            "infrastructure_encryption_enabled": false,
+            "load_balancer_backend_address_pool_id": "",
+            "location": "westeurope",
+            "managed_disk_cmk_key_vault_id": "",
+            "managed_disk_cmk_key_vault_key_id": "",
+            "managed_disk_cmk_rotation_to_latest_version_enabled": false,
+            "managed_disk_identity": [],
+            "managed_resource_group_id": "/subscriptions/a64fd3aa-b704-4942-b259-96843424d4d1/resourceGroups/de-assessment-dbx-managed",
+            "managed_resource_group_name": "de-assessment-dbx-managed",
+            "managed_services_cmk_key_vault_id": "",
+            "managed_services_cmk_key_vault_key_id": "",
+            "name": "de-assessment-ws",
+            "network_security_group_rules_required": null,
+            "public_network_access_enabled": true,
+            "resource_group_name": "de-assessment",
+            "sku": "premium",
+            "storage_account_identity": [],
+            "tags": {},
+            "timeouts": null,
+            "workspace_id": "7405605920433807",
+            "workspace_url": "adb-7405605920433807.7.azuredatabricks.net"
+          },
+          "sensitive_attributes": [],
+          "private": "eyJlMmJmYjczMC1lY2FhLTExZTYtOGY4OC0zNDM2M2JjN2M0YzAiOnsiY3JlYXRlIjoxODAwMDAwMDAwMDAwLCJkZWxldGUiOjE4MDAwMDAwMDAwMDAsInJlYWQiOjMwMDAwMDAwMDAwMCwidXBkYXRlIjoxODAwMDAwMDAwMDAwfX0=",
+          "dependencies": [
+            "azurerm_nat_gateway.main",
+            "azurerm_network_security_group.dbx",
+            "azurerm_resource_group.rg",
+            "azurerm_subnet.dbx_container",
+            "azurerm_subnet.dbx_host",
+            "azurerm_subnet_nat_gateway_association.dbx_container",
+            "azurerm_subnet_nat_gateway_association.dbx_host",
+            "azurerm_subnet_network_security_group_association.dbx_container",
+            "azurerm_subnet_network_security_group_association.dbx_host",
+            "azurerm_virtual_network.main"
+          ]
+        }
+      ]
+    },
+    {
+      "mode": "managed",
+      "type": "azurerm_key_vault",
+      "name": "kv",
+      "provider": "provider[\"registry.terraform.io/hashicorp/azurerm\"]",
+      "instances": [
+        {
+          "schema_version": 2,
+          "attributes": {
+            "access_policy": [],
+            "contact": [],
+            "enable_rbac_authorization": true,
+            "enabled_for_deployment": false,
+            "enabled_for_disk_encryption": false,
+            "enabled_for_template_deployment": false,
+            "id": "/subscriptions/a64fd3aa-b704-4942-b259-96843424d4d1/resourceGroups/de-assessment/providers/Microsoft.KeyVault/vaults/kv-de-assessment",
+            "location": "westeurope",
+            "name": "kv-de-assessment",
+            "network_acls": [
+              {
+                "bypass": "AzureServices",
+                "default_action": "Allow",
+                "ip_rules": [],
+                "virtual_network_subnet_ids": []
+              }
+            ],
+            "public_network_access_enabled": true,
+            "purge_protection_enabled": false,
+            "rbac_authorization_enabled": true,
+            "resource_group_name": "de-assessment",
+            "sku_name": "standard",
+            "soft_delete_retention_days": 90,
+            "tags": {},
+            "tenant_id": "186c3021-d0e1-4353-b0d9-d9b642e5dd44",
+            "timeouts": null,
+            "vault_uri": "https://kv-de-assessment.vault.azure.net/"
+          },
+          "sensitive_attributes": [],
+          "private": "eyJlMmJmYjczMC1lY2FhLTExZTYtOGY4OC0zNDM2M2JjN2M0YzAiOnsiY3JlYXRlIjoxODAwMDAwMDAwMDAwLCJkZWxldGUiOjE4MDAwMDAwMDAwMDAsInJlYWQiOjMwMDAwMDAwMDAwMCwidXBkYXRlIjoxODAwMDAwMDAwMDAwfSwic2NoZW1hX3ZlcnNpb24iOiIyIn0=",
+          "dependencies": [
+            "azurerm_resource_group.rg",
+            "data.azurerm_client_config.current"
+          ]
+        }
+      ]
+    },
+    {
+      "mode": "managed",
+      "type": "azurerm_log_analytics_workspace",
+      "name": "audit",
+      "provider": "provider[\"registry.terraform.io/hashicorp/azurerm\"]",
+      "instances": [
+        {
+          "schema_version": 3,
+          "attributes": {
+            "allow_resource_only_permissions": true,
+            "cmk_for_query_forced": false,
+            "daily_quota_gb": -1,
+            "data_collection_rule_id": "",
+            "id": "/subscriptions/a64fd3aa-b704-4942-b259-96843424d4d1/resourceGroups/de-assessment/providers/Microsoft.OperationalInsights/workspaces/law-de-assessment",
+            "identity": [],
+            "immediate_data_purge_on_30_days_enabled": false,
+            "internet_ingestion_enabled": true,
+            "internet_query_enabled": true,
+            "local_authentication_disabled": false,
+            "local_authentication_enabled": true,
+            "location": "westeurope",
+            "name": "law-de-assessment",
+            "primary_shared_key": "FOe0lOBLAHhQDmttElp+AEURX2G2kD+rZw5xpgXJYKax+eBeqA4R2uSWLjByqvWNrjqRjhJffuO0gpL4krpd9Q==",
+            "reservation_capacity_in_gb_per_day": null,
+            "resource_group_name": "de-assessment",
+            "retention_in_days": 90,
+            "secondary_shared_key": "q6CJLKLhvXV4i4G6q6oTmXs3bU/waQUBanzPP8Y+F9YlvLJD/AZ/dtiuJ47Eg7cssGBpMOU8rKYbDsaijz7uMw==",
+            "sku": "PerGB2018",
+            "tags": {},
+            "timeouts": null,
+            "workspace_id": "8b662c4d-aa38-4702-b34c-0faa61bff674"
+          },
+          "sensitive_attributes": [
+            [
+              {
+                "type": "get_attr",
+                "value": "primary_shared_key"
+              }
+            ],
+            [
+              {
+                "type": "get_attr",
+                "value": "secondary_shared_key"
+              }
+            ]
+          ],
+          "private": "eyJlMmJmYjczMC1lY2FhLTExZTYtOGY4OC0zNDM2M2JjN2M0YzAiOnsiY3JlYXRlIjoxODAwMDAwMDAwMDAwLCJkZWxldGUiOjE4MDAwMDAwMDAwMDAsInJlYWQiOjMwMDAwMDAwMDAwMCwidXBkYXRlIjoxODAwMDAwMDAwMDAwfSwic2NoZW1hX3ZlcnNpb24iOiIzIn0=",
+          "dependencies": [
+            "azurerm_resource_group.rg"
+          ]
+        }
+      ]
+    },
+    {
+      "mode": "managed",
+      "type": "azurerm_monitor_diagnostic_setting",
+      "name": "databricks_audit",
+      "provider": "provider[\"registry.terraform.io/hashicorp/azurerm\"]",
+      "instances": [
+        {
+          "schema_version": 0,
+          "attributes": {
+            "enabled_log": [
+              {
+                "category": "",
+                "category_group": "allLogs",
+                "retention_policy": [
+                  {
+                    "days": 0,
+                    "enabled": false
+                  }
+                ]
+              }
+            ],
+            "enabled_metric": [],
+            "eventhub_authorization_rule_id": "",
+            "eventhub_name": "",
+            "id": "/subscriptions/a64fd3aa-b704-4942-b259-96843424d4d1/resourceGroups/de-assessment/providers/Microsoft.Databricks/workspaces/de-assessment-ws|diag-de-assessment-databricks",
+            "log_analytics_destination_type": "",
+            "log_analytics_workspace_id": "/subscriptions/a64fd3aa-b704-4942-b259-96843424d4d1/resourceGroups/de-assessment/providers/Microsoft.OperationalInsights/workspaces/law-de-assessment",
+            "metric": [],
+            "name": "diag-de-assessment-databricks",
+            "partner_solution_id": null,
+            "storage_account_id": null,
+            "target_resource_id": "/subscriptions/a64fd3aa-b704-4942-b259-96843424d4d1/resourceGroups/de-assessment/providers/Microsoft.Databricks/workspaces/de-assessment-ws",
+            "timeouts": null
+          },
+          "sensitive_attributes": [],
+          "private": "eyJlMmJmYjczMC1lY2FhLTExZTYtOGY4OC0zNDM2M2JjN2M0YzAiOnsiY3JlYXRlIjoxODAwMDAwMDAwMDAwLCJkZWxldGUiOjM2MDAwMDAwMDAwMDAsInJlYWQiOjMwMDAwMDAwMDAwMCwidXBkYXRlIjoxODAwMDAwMDAwMDAwfX0=",
+          "dependencies": [
+            "azurerm_databricks_workspace.this",
+            "azurerm_log_analytics_workspace.audit",
+            "azurerm_nat_gateway.main",
+            "azurerm_network_security_group.dbx",
+            "azurerm_resource_group.rg",
+            "azurerm_subnet.dbx_container",
+            "azurerm_subnet.dbx_host",
+            "azurerm_subnet_nat_gateway_association.dbx_container",
+            "azurerm_subnet_nat_gateway_association.dbx_host",
+            "azurerm_subnet_network_security_group_association.dbx_container",
+            "azurerm_subnet_network_security_group_association.dbx_host",
+            "azurerm_virtual_network.main"
+          ]
+        }
+      ]
+    },
+    {
+      "mode": "managed",
+      "type": "azurerm_monitor_diagnostic_setting",
+      "name": "keyvault_audit",
+      "provider": "provider[\"registry.terraform.io/hashicorp/azurerm\"]",
+      "instances": [
+        {
+          "schema_version": 0,
+          "attributes": {
+            "enabled_log": [
+              {
+                "category": "",
+                "category_group": "allLogs",
+                "retention_policy": [
+                  {
+                    "days": 0,
+                    "enabled": false
+                  }
+                ]
+              }
+            ],
+            "enabled_metric": [
+              {
+                "category": "AllMetrics"
+              }
+            ],
+            "eventhub_authorization_rule_id": "",
+            "eventhub_name": "",
+            "id": "/subscriptions/a64fd3aa-b704-4942-b259-96843424d4d1/resourceGroups/de-assessment/providers/Microsoft.KeyVault/vaults/kv-de-assessment|diag-de-assessment-kv",
+            "log_analytics_destination_type": "AzureDiagnostics",
+            "log_analytics_workspace_id": "/subscriptions/a64fd3aa-b704-4942-b259-96843424d4d1/resourceGroups/de-assessment/providers/Microsoft.OperationalInsights/workspaces/law-de-assessment",
+            "metric": [
+              {
+                "category": "AllMetrics",
+                "enabled": true,
+                "retention_policy": [
+                  {
+                    "days": 0,
+                    "enabled": false
+                  }
+                ]
+              }
+            ],
+            "name": "diag-de-assessment-kv",
+            "partner_solution_id": null,
+            "storage_account_id": null,
+            "target_resource_id": "/subscriptions/a64fd3aa-b704-4942-b259-96843424d4d1/resourceGroups/de-assessment/providers/Microsoft.KeyVault/vaults/kv-de-assessment",
+            "timeouts": null
+          },
+          "sensitive_attributes": [],
+          "private": "eyJlMmJmYjczMC1lY2FhLTExZTYtOGY4OC0zNDM2M2JjN2M0YzAiOnsiY3JlYXRlIjoxODAwMDAwMDAwMDAwLCJkZWxldGUiOjM2MDAwMDAwMDAwMDAsInJlYWQiOjMwMDAwMDAwMDAwMCwidXBkYXRlIjoxODAwMDAwMDAwMDAwfX0=",
+          "dependencies": [
+            "azurerm_key_vault.kv",
+            "azurerm_log_analytics_workspace.audit",
+            "azurerm_resource_group.rg",
+            "data.azurerm_client_config.current"
+          ]
+        }
+      ]
+    },
+    {
+      "mode": "managed",
+      "type": "azurerm_monitor_diagnostic_setting",
+      "name": "storage_audit",
+      "provider": "provider[\"registry.terraform.io/hashicorp/azurerm\"]",
+      "instances": [
+        {
+          "schema_version": 0,
+          "attributes": {
+            "enabled_log": [
+              {
+                "category": "",
+                "category_group": "allLogs",
+                "retention_policy": [
+                  {
+                    "days": 0,
+                    "enabled": false
+                  }
+                ]
+              }
+            ],
+            "enabled_metric": [
+              {
+                "category": "Transaction"
+              }
+            ],
+            "eventhub_authorization_rule_id": "",
+            "eventhub_name": "",
+            "id": "/subscriptions/a64fd3aa-b704-4942-b259-96843424d4d1/resourceGroups/de-assessment/providers/Microsoft.Storage/storageAccounts/deassessmentd06fabcc/blobServices/default|diag-de-assessment-storage",
+            "log_analytics_destination_type": "",
+            "log_analytics_workspace_id": "/subscriptions/a64fd3aa-b704-4942-b259-96843424d4d1/resourceGroups/de-assessment/providers/Microsoft.OperationalInsights/workspaces/law-de-assessment",
+            "metric": [
+              {
+                "category": "Capacity",
+                "enabled": false,
+                "retention_policy": [
+                  {
+                    "days": 0,
+                    "enabled": false
+                  }
+                ]
+              },
+              {
+                "category": "Transaction",
+                "enabled": true,
+                "retention_policy": [
+                  {
+                    "days": 0,
+                    "enabled": false
+                  }
+                ]
+              }
+            ],
+            "name": "diag-de-assessment-storage",
+            "partner_solution_id": null,
+            "storage_account_id": null,
+            "target_resource_id": "/subscriptions/a64fd3aa-b704-4942-b259-96843424d4d1/resourceGroups/de-assessment/providers/Microsoft.Storage/storageAccounts/deassessmentd06fabcc/blobServices/default",
+            "timeouts": null
+          },
+          "sensitive_attributes": [],
+          "private": "eyJlMmJmYjczMC1lY2FhLTExZTYtOGY4OC0zNDM2M2JjN2M0YzAiOnsiY3JlYXRlIjoxODAwMDAwMDAwMDAwLCJkZWxldGUiOjM2MDAwMDAwMDAwMDAsInJlYWQiOjMwMDAwMDAwMDAwMCwidXBkYXRlIjoxODAwMDAwMDAwMDAwfX0=",
+          "dependencies": [
+            "azurerm_log_analytics_workspace.audit",
+            "azurerm_resource_group.rg",
+            "azurerm_storage_account.storage",
+            "random_id.sa"
+          ]
+        }
+      ]
+    },
+    {
+      "mode": "managed",
+      "type": "azurerm_nat_gateway",
+      "name": "main",
+      "provider": "provider[\"registry.terraform.io/hashicorp/azurerm\"]",
+      "instances": [
+        {
+          "schema_version": 0,
+          "attributes": {
+            "id": "/subscriptions/a64fd3aa-b704-4942-b259-96843424d4d1/resourceGroups/de-assessment/providers/Microsoft.Network/natGateways/natgw-de-assessment",
+            "idle_timeout_in_minutes": 4,
+            "location": "westeurope",
+            "name": "natgw-de-assessment",
+            "resource_group_name": "de-assessment",
+            "resource_guid": "145f4b8b-ebde-4f4d-8eeb-31b0c29d486a",
+            "sku_name": "Standard",
+            "tags": {},
+            "timeouts": null,
+            "zones": []
+          },
+          "sensitive_attributes": [],
+          "private": "eyJlMmJmYjczMC1lY2FhLTExZTYtOGY4OC0zNDM2M2JjN2M0YzAiOnsiY3JlYXRlIjozNjAwMDAwMDAwMDAwLCJkZWxldGUiOjM2MDAwMDAwMDAwMDAsInJlYWQiOjMwMDAwMDAwMDAwMCwidXBkYXRlIjozNjAwMDAwMDAwMDAwfX0=",
+          "dependencies": [
+            "azurerm_resource_group.rg"
+          ]
+        }
+      ]
+    },
+    {
+      "mode": "managed",
+      "type": "azurerm_nat_gateway_public_ip_association",
+      "name": "main",
+      "provider": "provider[\"registry.terraform.io/hashicorp/azurerm\"]",
+      "instances": [
+        {
+          "schema_version": 0,
+          "attributes": {
+            "id": "/subscriptions/a64fd3aa-b704-4942-b259-96843424d4d1/resourceGroups/de-assessment/providers/Microsoft.Network/natGateways/natgw-de-assessment|/subscriptions/a64fd3aa-b704-4942-b259-96843424d4d1/resourceGroups/de-assessment/providers/Microsoft.Network/publicIPAddresses/pip-de-assessment-natgw",
+            "nat_gateway_id": "/subscriptions/a64fd3aa-b704-4942-b259-96843424d4d1/resourceGroups/de-assessment/providers/Microsoft.Network/natGateways/natgw-de-assessment",
+            "public_ip_address_id": "/subscriptions/a64fd3aa-b704-4942-b259-96843424d4d1/resourceGroups/de-assessment/providers/Microsoft.Network/publicIPAddresses/pip-de-assessment-natgw",
+            "timeouts": null
+          },
+          "sensitive_attributes": [],
+          "private": "eyJlMmJmYjczMC1lY2FhLTExZTYtOGY4OC0zNDM2M2JjN2M0YzAiOnsiY3JlYXRlIjoxODAwMDAwMDAwMDAwLCJkZWxldGUiOjE4MDAwMDAwMDAwMDAsInJlYWQiOjMwMDAwMDAwMDAwMH19",
+          "dependencies": [
+            "azurerm_nat_gateway.main",
+            "azurerm_public_ip.nat_gw",
+            "azurerm_resource_group.rg"
+          ]
+        }
+      ]
+    },
+    {
+      "mode": "managed",
+      "type": "azurerm_network_security_group",
+      "name": "dbx",
+      "provider": "provider[\"registry.terraform.io/hashicorp/azurerm\"]",
+      "instances": [
+        {
+          "schema_version": 0,
+          "attributes": {
+            "id": "/subscriptions/a64fd3aa-b704-4942-b259-96843424d4d1/resourceGroups/de-assessment/providers/Microsoft.Network/networkSecurityGroups/nsg-de-assessment-dbx",
+            "location": "westeurope",
+            "name": "nsg-de-assessment-dbx",
+            "resource_group_name": "de-assessment",
+            "security_rule": [
+              {
+                "access": "Allow",
+                "description": "Required for worker communication with Azure Eventhub services.",
+                "destination_address_prefix": "EventHub",
+                "destination_address_prefixes": [],
+                "destination_application_security_group_ids": [],
+                "destination_port_range": "9093",
+                "destination_port_ranges": [],
+                "direction": "Outbound",
+                "name": "Microsoft.Databricks-workspaces_UseOnly_databricks-worker-to-eventhub",
+                "priority": 104,
+                "protocol": "Tcp",
+                "source_address_prefix": "VirtualNetwork",
+                "source_address_prefixes": [],
+                "source_application_security_group_ids": [],
+                "source_port_range": "*",
+                "source_port_ranges": []
+              },
+              {
+                "access": "Allow",
+                "description": "Required for worker nodes communication within a cluster.",
+                "destination_address_prefix": "VirtualNetwork",
+                "destination_address_prefixes": [],
+                "destination_application_security_group_ids": [],
+                "destination_port_range": "*",
+                "destination_port_ranges": [],
+                "direction": "Inbound",
+                "name": "Microsoft.Databricks-workspaces_UseOnly_databricks-worker-to-worker-inbound",
+                "priority": 100,
+                "protocol": "*",
+                "source_address_prefix": "VirtualNetwork",
+                "source_address_prefixes": [],
+                "source_application_security_group_ids": [],
+                "source_port_range": "*",
+                "source_port_ranges": []
+              },
+              {
+                "access": "Allow",
+                "description": "Required for worker nodes communication within a cluster.",
+                "destination_address_prefix": "VirtualNetwork",
+                "destination_address_prefixes": [],
+                "destination_application_security_group_ids": [],
+                "destination_port_range": "*",
+                "destination_port_ranges": [],
+                "direction": "Outbound",
+                "name": "Microsoft.Databricks-workspaces_UseOnly_databricks-worker-to-worker-outbound",
+                "priority": 100,
+                "protocol": "*",
+                "source_address_prefix": "VirtualNetwork",
+                "source_address_prefixes": [],
+                "source_application_security_group_ids": [],
+                "source_port_range": "*",
+                "source_port_ranges": []
+              },
+              {
+                "access": "Allow",
+                "description": "Required for workers communication with Azure SQL services.",
+                "destination_address_prefix": "Sql",
+                "destination_address_prefixes": [],
+                "destination_application_security_group_ids": [],
+                "destination_port_range": "3306",
+                "destination_port_ranges": [],
+                "direction": "Outbound",
+                "name": "Microsoft.Databricks-workspaces_UseOnly_databricks-worker-to-sql",
+                "priority": 102,
+                "protocol": "Tcp",
+                "source_address_prefix": "VirtualNetwork",
+                "source_address_prefixes": [],
+                "source_application_security_group_ids": [],
+                "source_port_range": "*",
+                "source_port_ranges": []
+              },
+              {
+                "access": "Allow",
+                "description": "Required for workers communication with Azure Storage services.",
+                "destination_address_prefix": "Storage",
+                "destination_address_prefixes": [],
+                "destination_application_security_group_ids": [],
+                "destination_port_range": "443",
+                "destination_port_ranges": [],
+                "direction": "Outbound",
+                "name": "Microsoft.Databricks-workspaces_UseOnly_databricks-worker-to-storage",
+                "priority": 103,
+                "protocol": "Tcp",
+                "source_address_prefix": "VirtualNetwork",
+                "source_address_prefixes": [],
+                "source_application_security_group_ids": [],
+                "source_port_range": "*",
+                "source_port_ranges": []
+              },
+              {
+                "access": "Allow",
+                "description": "Required for workers communication with Databricks control plane.",
+                "destination_address_prefix": "AzureDatabricks",
+                "destination_address_prefixes": [],
+                "destination_application_security_group_ids": [],
+                "destination_port_range": "",
+                "destination_port_ranges": [
+                  "3306",
+                  "443",
+                  "8443-8451"
+                ],
+                "direction": "Outbound",
+                "name": "Microsoft.Databricks-workspaces_UseOnly_databricks-worker-to-databricks-webapp",
+                "priority": 101,
+                "protocol": "Tcp",
+                "source_address_prefix": "VirtualNetwork",
+                "source_address_prefixes": [],
+                "source_application_security_group_ids": [],
+                "source_port_range": "*",
+                "source_port_ranges": []
+              }
+            ],
+            "tags": {},
+            "timeouts": null
+          },
+          "sensitive_attributes": [],
+          "private": "eyJlMmJmYjczMC1lY2FhLTExZTYtOGY4OC0zNDM2M2JjN2M0YzAiOnsiY3JlYXRlIjoxODAwMDAwMDAwMDAwLCJkZWxldGUiOjE4MDAwMDAwMDAwMDAsInJlYWQiOjMwMDAwMDAwMDAwMCwidXBkYXRlIjoxODAwMDAwMDAwMDAwfX0=",
+          "dependencies": [
+            "azurerm_resource_group.rg"
+          ]
+        }
+      ]
+    },
+    {
+      "mode": "managed",
+      "type": "azurerm_private_dns_zone",
+      "name": "blob",
+      "provider": "provider[\"registry.terraform.io/hashicorp/azurerm\"]",
+      "instances": [
+        {
+          "schema_version": 0,
+          "attributes": {
+            "id": "/subscriptions/a64fd3aa-b704-4942-b259-96843424d4d1/resourceGroups/de-assessment/providers/Microsoft.Network/privateDnsZones/privatelink.blob.core.windows.net",
+            "max_number_of_record_sets": 25000,
+            "max_number_of_virtual_network_links": 1000,
+            "max_number_of_virtual_network_links_with_registration": 100,
+            "name": "privatelink.blob.core.windows.net",
+            "number_of_record_sets": 2,
+            "resource_group_name": "de-assessment",
+            "soa_record": [
+              {
+                "email": "azureprivatedns-host.microsoft.com",
+                "expire_time": 2419200,
+                "fqdn": "privatelink.blob.core.windows.net.",
+                "host_name": "azureprivatedns.net",
+                "minimum_ttl": 10,
+                "refresh_time": 3600,
+                "retry_time": 300,
+                "serial_number": 1,
+                "tags": {},
+                "ttl": 3600
+              }
+            ],
+            "tags": {},
+            "timeouts": null
+          },
+          "sensitive_attributes": [],
+          "private": "eyJlMmJmYjczMC1lY2FhLTExZTYtOGY4OC0zNDM2M2JjN2M0YzAiOnsiY3JlYXRlIjoxODAwMDAwMDAwMDAwLCJkZWxldGUiOjE4MDAwMDAwMDAwMDAsInJlYWQiOjMwMDAwMDAwMDAwMCwidXBkYXRlIjoxODAwMDAwMDAwMDAwfX0=",
+          "dependencies": [
+            "azurerm_resource_group.rg"
+          ]
+        }
+      ]
+    },
+    {
+      "mode": "managed",
+      "type": "azurerm_private_dns_zone",
+      "name": "databricks",
+      "provider": "provider[\"registry.terraform.io/hashicorp/azurerm\"]",
+      "instances": [
+        {
+          "schema_version": 0,
+          "attributes": {
+            "id": "/subscriptions/a64fd3aa-b704-4942-b259-96843424d4d1/resourceGroups/de-assessment/providers/Microsoft.Network/privateDnsZones/privatelink.azuredatabricks.net",
+            "max_number_of_record_sets": 25000,
+            "max_number_of_virtual_network_links": 1000,
+            "max_number_of_virtual_network_links_with_registration": 100,
+            "name": "privatelink.azuredatabricks.net",
+            "number_of_record_sets": 2,
+            "resource_group_name": "de-assessment",
+            "soa_record": [
+              {
+                "email": "azureprivatedns-host.microsoft.com",
+                "expire_time": 2419200,
+                "fqdn": "privatelink.azuredatabricks.net.",
+                "host_name": "azureprivatedns.net",
+                "minimum_ttl": 10,
+                "refresh_time": 3600,
+                "retry_time": 300,
+                "serial_number": 1,
+                "tags": {},
+                "ttl": 3600
+              }
+            ],
+            "tags": {},
+            "timeouts": null
+          },
+          "sensitive_attributes": [],
+          "private": "eyJlMmJmYjczMC1lY2FhLTExZTYtOGY4OC0zNDM2M2JjN2M0YzAiOnsiY3JlYXRlIjoxODAwMDAwMDAwMDAwLCJkZWxldGUiOjE4MDAwMDAwMDAwMDAsInJlYWQiOjMwMDAwMDAwMDAwMCwidXBkYXRlIjoxODAwMDAwMDAwMDAwfX0=",
+          "dependencies": [
+            "azurerm_resource_group.rg"
+          ]
+        }
+      ]
+    },
+    {
+      "mode": "managed",
+      "type": "azurerm_private_dns_zone",
+      "name": "dfs",
+      "provider": "provider[\"registry.terraform.io/hashicorp/azurerm\"]",
+      "instances": [
+        {
+          "schema_version": 0,
+          "attributes": {
+            "id": "/subscriptions/a64fd3aa-b704-4942-b259-96843424d4d1/resourceGroups/de-assessment/providers/Microsoft.Network/privateDnsZones/privatelink.dfs.core.windows.net",
+            "max_number_of_record_sets": 25000,
+            "max_number_of_virtual_network_links": 1000,
+            "max_number_of_virtual_network_links_with_registration": 100,
+            "name": "privatelink.dfs.core.windows.net",
+            "number_of_record_sets": 2,
+            "resource_group_name": "de-assessment",
+            "soa_record": [
+              {
+                "email": "azureprivatedns-host.microsoft.com",
+                "expire_time": 2419200,
+                "fqdn": "privatelink.dfs.core.windows.net.",
+                "host_name": "azureprivatedns.net",
+                "minimum_ttl": 10,
+                "refresh_time": 3600,
+                "retry_time": 300,
+                "serial_number": 1,
+                "tags": {},
+                "ttl": 3600
+              }
+            ],
+            "tags": {},
+            "timeouts": null
+          },
+          "sensitive_attributes": [],
+          "private": "eyJlMmJmYjczMC1lY2FhLTExZTYtOGY4OC0zNDM2M2JjN2M0YzAiOnsiY3JlYXRlIjoxODAwMDAwMDAwMDAwLCJkZWxldGUiOjE4MDAwMDAwMDAwMDAsInJlYWQiOjMwMDAwMDAwMDAwMCwidXBkYXRlIjoxODAwMDAwMDAwMDAwfX0=",
+          "dependencies": [
+            "azurerm_resource_group.rg"
+          ]
+        }
+      ]
+    },
+    {
+      "mode": "managed",
+      "type": "azurerm_private_dns_zone_virtual_network_link",
+      "name": "blob",
+      "provider": "provider[\"registry.terraform.io/hashicorp/azurerm\"]",
+      "instances": [
+        {
+          "schema_version": 0,
+          "attributes": {
+            "id": "/subscriptions/a64fd3aa-b704-4942-b259-96843424d4d1/resourceGroups/de-assessment/providers/Microsoft.Network/privateDnsZones/privatelink.blob.core.windows.net/virtualNetworkLinks/link-blob",
+            "name": "link-blob",
+            "private_dns_zone_name": "privatelink.blob.core.windows.net",
+            "registration_enabled": false,
+            "resolution_policy": "Default",
+            "resource_group_name": "de-assessment",
+            "tags": {},
+            "timeouts": null,
+            "virtual_network_id": "/subscriptions/a64fd3aa-b704-4942-b259-96843424d4d1/resourceGroups/de-assessment/providers/Microsoft.Network/virtualNetworks/vnet-de-assessment"
+          },
+          "sensitive_attributes": [],
+          "private": "eyJlMmJmYjczMC1lY2FhLTExZTYtOGY4OC0zNDM2M2JjN2M0YzAiOnsiY3JlYXRlIjoxODAwMDAwMDAwMDAwLCJkZWxldGUiOjE4MDAwMDAwMDAwMDAsInJlYWQiOjMwMDAwMDAwMDAwMCwidXBkYXRlIjoxODAwMDAwMDAwMDAwfX0=",
+          "dependencies": [
+            "azurerm_private_dns_zone.blob",
+            "azurerm_resource_group.rg",
+            "azurerm_virtual_network.main"
+          ]
+        }
+      ]
+    },
+    {
+      "mode": "managed",
+      "type": "azurerm_private_dns_zone_virtual_network_link",
+      "name": "databricks",
+      "provider": "provider[\"registry.terraform.io/hashicorp/azurerm\"]",
+      "instances": [
+        {
+          "schema_version": 0,
+          "attributes": {
+            "id": "/subscriptions/a64fd3aa-b704-4942-b259-96843424d4d1/resourceGroups/de-assessment/providers/Microsoft.Network/privateDnsZones/privatelink.azuredatabricks.net/virtualNetworkLinks/link-databricks",
+            "name": "link-databricks",
+            "private_dns_zone_name": "privatelink.azuredatabricks.net",
+            "registration_enabled": false,
+            "resolution_policy": "Default",
+            "resource_group_name": "de-assessment",
+            "tags": {},
+            "timeouts": null,
+            "virtual_network_id": "/subscriptions/a64fd3aa-b704-4942-b259-96843424d4d1/resourceGroups/de-assessment/providers/Microsoft.Network/virtualNetworks/vnet-de-assessment"
+          },
+          "sensitive_attributes": [],
+          "private": "eyJlMmJmYjczMC1lY2FhLTExZTYtOGY4OC0zNDM2M2JjN2M0YzAiOnsiY3JlYXRlIjoxODAwMDAwMDAwMDAwLCJkZWxldGUiOjE4MDAwMDAwMDAwMDAsInJlYWQiOjMwMDAwMDAwMDAwMCwidXBkYXRlIjoxODAwMDAwMDAwMDAwfX0=",
+          "dependencies": [
+            "azurerm_private_dns_zone.databricks",
+            "azurerm_resource_group.rg",
+            "azurerm_virtual_network.main"
+          ]
+        }
+      ]
+    },
+    {
+      "mode": "managed",
+      "type": "azurerm_private_dns_zone_virtual_network_link",
+      "name": "dfs",
+      "provider": "provider[\"registry.terraform.io/hashicorp/azurerm\"]",
+      "instances": [
+        {
+          "schema_version": 0,
+          "attributes": {
+            "id": "/subscriptions/a64fd3aa-b704-4942-b259-96843424d4d1/resourceGroups/de-assessment/providers/Microsoft.Network/privateDnsZones/privatelink.dfs.core.windows.net/virtualNetworkLinks/link-dfs",
+            "name": "link-dfs",
+            "private_dns_zone_name": "privatelink.dfs.core.windows.net",
+            "registration_enabled": false,
+            "resolution_policy": "Default",
+            "resource_group_name": "de-assessment",
+            "tags": {},
+            "timeouts": null,
+            "virtual_network_id": "/subscriptions/a64fd3aa-b704-4942-b259-96843424d4d1/resourceGroups/de-assessment/providers/Microsoft.Network/virtualNetworks/vnet-de-assessment"
+          },
+          "sensitive_attributes": [],
+          "private": "eyJlMmJmYjczMC1lY2FhLTExZTYtOGY4OC0zNDM2M2JjN2M0YzAiOnsiY3JlYXRlIjoxODAwMDAwMDAwMDAwLCJkZWxldGUiOjE4MDAwMDAwMDAwMDAsInJlYWQiOjMwMDAwMDAwMDAwMCwidXBkYXRlIjoxODAwMDAwMDAwMDAwfX0=",
+          "dependencies": [
+            "azurerm_private_dns_zone.dfs",
+            "azurerm_resource_group.rg",
+            "azurerm_virtual_network.main"
+          ]
+        }
+      ]
+    },
+    {
+      "mode": "managed",
+      "type": "azurerm_private_endpoint",
+      "name": "databricks_auth",
+      "provider": "provider[\"registry.terraform.io/hashicorp/azurerm\"]",
+      "instances": [
+        {
+          "schema_version": 0,
+          "attributes": {
+            "custom_dns_configs": [],
+            "custom_network_interface_name": "",
+            "id": "/subscriptions/a64fd3aa-b704-4942-b259-96843424d4d1/resourceGroups/de-assessment/providers/Microsoft.Network/privateEndpoints/pe-de-assessment-databricks-auth",
+            "ip_configuration": [],
+            "location": "westeurope",
+            "name": "pe-de-assessment-databricks-auth",
+            "network_interface": [
+              {
+                "id": "/subscriptions/a64fd3aa-b704-4942-b259-96843424d4d1/resourceGroups/de-assessment/providers/Microsoft.Network/networkInterfaces/pe-de-assessment-databricks-auth.nic.30e05116-6d21-4dbc-bed9-0829d579acd3",
+                "name": "pe-de-assessment-databricks-auth.nic.30e05116-6d21-4dbc-bed9-0829d579acd3"
+              }
+            ],
+            "private_dns_zone_configs": [
+              {
+                "id": "/subscriptions/a64fd3aa-b704-4942-b259-96843424d4d1/resourceGroups/de-assessment/providers/Microsoft.Network/privateEndpoints/pe-de-assessment-databricks-auth/privateDnsZoneGroups/dns-group-databricks-auth/privateDnsZoneConfigs/privatelink.azuredatabricks.net",
+                "name": "privatelink.azuredatabricks.net",
+                "private_dns_zone_id": "/subscriptions/a64fd3aa-b704-4942-b259-96843424d4d1/resourceGroups/de-assessment/providers/Microsoft.Network/privateDnsZones/privatelink.azuredatabricks.net",
+                "record_sets": [
+                  {
+                    "fqdn": "westeurope.pl-auth.privatelink.azuredatabricks.net",
+                    "ip_addresses": [
+                      "10.0.1.7"
+                    ],
+                    "name": "westeurope.pl-auth",
+                    "ttl": 10,
+                    "type": "A"
+                  },
+                  {
+                    "fqdn": "westeurope-c2.pl-auth.privatelink.azuredatabricks.net",
+                    "ip_addresses": [
+                      "10.0.1.8"
+                    ],
+                    "name": "westeurope-c2.pl-auth",
+                    "ttl": 10,
+                    "type": "A"
+                  },
+                  {
+                    "fqdn": "westeurope-c3.pl-auth.privatelink.azuredatabricks.net",
+                    "ip_addresses": [
+                      "10.0.1.9"
+                    ],
+                    "name": "westeurope-c3.pl-auth",
+                    "ttl": 10,
+                    "type": "A"
+                  }
+                ]
+              }
+            ],
+            "private_dns_zone_group": [
+              {
+                "id": "/subscriptions/a64fd3aa-b704-4942-b259-96843424d4d1/resourceGroups/de-assessment/providers/Microsoft.Network/privateEndpoints/pe-de-assessment-databricks-auth/privateDnsZoneGroups/dns-group-databricks-auth",
+                "name": "dns-group-databricks-auth",
+                "private_dns_zone_ids": [
+                  "/subscriptions/a64fd3aa-b704-4942-b259-96843424d4d1/resourceGroups/de-assessment/providers/Microsoft.Network/privateDnsZones/privatelink.azuredatabricks.net"
+                ]
+              }
+            ],
+            "private_service_connection": [
+              {
+                "is_manual_connection": false,
+                "name": "psc-databricks-auth",
+                "private_connection_resource_alias": "",
+                "private_connection_resource_id": "/subscriptions/a64fd3aa-b704-4942-b259-96843424d4d1/resourceGroups/de-assessment/providers/Microsoft.Databricks/workspaces/de-assessment-ws",
+                "private_ip_address": "10.0.1.7",
+                "request_message": "",
+                "subresource_names": [
+                  "browser_authentication"
+                ]
+              }
+            ],
+            "resource_group_name": "de-assessment",
+            "subnet_id": "/subscriptions/a64fd3aa-b704-4942-b259-96843424d4d1/resourceGroups/de-assessment/providers/Microsoft.Network/virtualNetworks/vnet-de-assessment/subnets/snet-private-endpoints",
+            "tags": {},
+            "timeouts": null
+          },
+          "sensitive_attributes": [],
+          "private": "eyJlMmJmYjczMC1lY2FhLTExZTYtOGY4OC0zNDM2M2JjN2M0YzAiOnsiY3JlYXRlIjozNjAwMDAwMDAwMDAwLCJkZWxldGUiOjM2MDAwMDAwMDAwMDAsInJlYWQiOjMwMDAwMDAwMDAwMCwidXBkYXRlIjozNjAwMDAwMDAwMDAwfX0=",
+          "dependencies": [
+            "azurerm_databricks_workspace.this",
+            "azurerm_nat_gateway.main",
+            "azurerm_network_security_group.dbx",
+            "azurerm_private_dns_zone.databricks",
+            "azurerm_private_endpoint.databricks_ui_api",
+            "azurerm_resource_group.rg",
+            "azurerm_subnet.dbx_container",
+            "azurerm_subnet.dbx_host",
+            "azurerm_subnet.private_endpoints",
+            "azurerm_subnet_nat_gateway_association.dbx_container",
+            "azurerm_subnet_nat_gateway_association.dbx_host",
+            "azurerm_subnet_network_security_group_association.dbx_container",
+            "azurerm_subnet_network_security_group_association.dbx_host",
+            "azurerm_virtual_network.main"
+          ]
+        }
+      ]
+    },
+    {
+      "mode": "managed",
+      "type": "azurerm_private_endpoint",
+      "name": "databricks_ui_api",
+      "provider": "provider[\"registry.terraform.io/hashicorp/azurerm\"]",
+      "instances": [
+        {
+          "schema_version": 0,
+          "attributes": {
+            "custom_dns_configs": [],
+            "custom_network_interface_name": "",
+            "id": "/subscriptions/a64fd3aa-b704-4942-b259-96843424d4d1/resourceGroups/de-assessment/providers/Microsoft.Network/privateEndpoints/pe-de-assessment-databricks-ui-api",
+            "ip_configuration": [],
+            "location": "westeurope",
+            "name": "pe-de-assessment-databricks-ui-api",
+            "network_interface": [
+              {
+                "id": "/subscriptions/a64fd3aa-b704-4942-b259-96843424d4d1/resourceGroups/de-assessment/providers/Microsoft.Network/networkInterfaces/pe-de-assessment-databricks-ui-api.nic.f8535060-319b-4613-919c-2bc712ae662d",
+                "name": "pe-de-assessment-databricks-ui-api.nic.f8535060-319b-4613-919c-2bc712ae662d"
+              }
+            ],
+            "private_dns_zone_configs": [
+              {
+                "id": "/subscriptions/a64fd3aa-b704-4942-b259-96843424d4d1/resourceGroups/de-assessment/providers/Microsoft.Network/privateEndpoints/pe-de-assessment-databricks-ui-api/privateDnsZoneGroups/dns-group-databricks/privateDnsZoneConfigs/privatelink.azuredatabricks.net",
+                "name": "privatelink.azuredatabricks.net",
+                "private_dns_zone_id": "/subscriptions/a64fd3aa-b704-4942-b259-96843424d4d1/resourceGroups/de-assessment/providers/Microsoft.Network/privateDnsZones/privatelink.azuredatabricks.net",
+                "record_sets": [
+                  {
+                    "fqdn": "adb-7405605920433807.7.privatelink.azuredatabricks.net",
+                    "ip_addresses": [
+                      "10.0.1.6"
+                    ],
+                    "name": "adb-7405605920433807.7",
+                    "ttl": 10,
+                    "type": "A"
+                  }
+                ]
+              }
+            ],
+            "private_dns_zone_group": [
+              {
+                "id": "/subscriptions/a64fd3aa-b704-4942-b259-96843424d4d1/resourceGroups/de-assessment/providers/Microsoft.Network/privateEndpoints/pe-de-assessment-databricks-ui-api/privateDnsZoneGroups/dns-group-databricks",
+                "name": "dns-group-databricks",
+                "private_dns_zone_ids": [
+                  "/subscriptions/a64fd3aa-b704-4942-b259-96843424d4d1/resourceGroups/de-assessment/providers/Microsoft.Network/privateDnsZones/privatelink.azuredatabricks.net"
+                ]
+              }
+            ],
+            "private_service_connection": [
+              {
+                "is_manual_connection": false,
+                "name": "psc-databricks-ui-api",
+                "private_connection_resource_alias": "",
+                "private_connection_resource_id": "/subscriptions/a64fd3aa-b704-4942-b259-96843424d4d1/resourceGroups/de-assessment/providers/Microsoft.Databricks/workspaces/de-assessment-ws",
+                "private_ip_address": "10.0.1.6",
+                "request_message": "",
+                "subresource_names": [
+                  "databricks_ui_api"
+                ]
+              }
+            ],
+            "resource_group_name": "de-assessment",
+            "subnet_id": "/subscriptions/a64fd3aa-b704-4942-b259-96843424d4d1/resourceGroups/de-assessment/providers/Microsoft.Network/virtualNetworks/vnet-de-assessment/subnets/snet-private-endpoints",
+            "tags": {},
+            "timeouts": null
+          },
+          "sensitive_attributes": [],
+          "private": "eyJlMmJmYjczMC1lY2FhLTExZTYtOGY4OC0zNDM2M2JjN2M0YzAiOnsiY3JlYXRlIjozNjAwMDAwMDAwMDAwLCJkZWxldGUiOjM2MDAwMDAwMDAwMDAsInJlYWQiOjMwMDAwMDAwMDAwMCwidXBkYXRlIjozNjAwMDAwMDAwMDAwfX0=",
+          "dependencies": [
+            "azurerm_databricks_workspace.this",
+            "azurerm_nat_gateway.main",
+            "azurerm_network_security_group.dbx",
+            "azurerm_private_dns_zone.databricks",
+            "azurerm_resource_group.rg",
+            "azurerm_subnet.dbx_container",
+            "azurerm_subnet.dbx_host",
+            "azurerm_subnet.private_endpoints",
+            "azurerm_subnet_nat_gateway_association.dbx_container",
+            "azurerm_subnet_nat_gateway_association.dbx_host",
+            "azurerm_subnet_network_security_group_association.dbx_container",
+            "azurerm_subnet_network_security_group_association.dbx_host",
+            "azurerm_virtual_network.main"
+          ]
+        }
+      ]
+    },
+    {
+      "mode": "managed",
+      "type": "azurerm_private_endpoint",
+      "name": "storage_blob",
+      "provider": "provider[\"registry.terraform.io/hashicorp/azurerm\"]",
+      "instances": [
+        {
+          "schema_version": 0,
+          "attributes": {
+            "custom_dns_configs": [],
+            "custom_network_interface_name": "",
+            "id": "/subscriptions/a64fd3aa-b704-4942-b259-96843424d4d1/resourceGroups/de-assessment/providers/Microsoft.Network/privateEndpoints/pe-de-assessment-storage-blob",
+            "ip_configuration": [],
+            "location": "westeurope",
+            "name": "pe-de-assessment-storage-blob",
+            "network_interface": [
+              {
+                "id": "/subscriptions/a64fd3aa-b704-4942-b259-96843424d4d1/resourceGroups/de-assessment/providers/Microsoft.Network/networkInterfaces/pe-de-assessment-storage-blob.nic.78749f2f-6cd7-4e3c-93ff-0289a765b428",
+                "name": "pe-de-assessment-storage-blob.nic.78749f2f-6cd7-4e3c-93ff-0289a765b428"
+              }
+            ],
+            "private_dns_zone_configs": [
+              {
+                "id": "/subscriptions/a64fd3aa-b704-4942-b259-96843424d4d1/resourceGroups/de-assessment/providers/Microsoft.Network/privateEndpoints/pe-de-assessment-storage-blob/privateDnsZoneGroups/dns-group-blob/privateDnsZoneConfigs/privatelink.blob.core.windows.net",
+                "name": "privatelink.blob.core.windows.net",
+                "private_dns_zone_id": "/subscriptions/a64fd3aa-b704-4942-b259-96843424d4d1/resourceGroups/de-assessment/providers/Microsoft.Network/privateDnsZones/privatelink.blob.core.windows.net",
+                "record_sets": [
+                  {
+                    "fqdn": "deassessmentd06fabcc.privatelink.blob.core.windows.net",
+                    "ip_addresses": [
+                      "10.0.1.5"
+                    ],
+                    "name": "deassessmentd06fabcc",
+                    "ttl": 10,
+                    "type": "A"
+                  }
+                ]
+              }
+            ],
+            "private_dns_zone_group": [
+              {
+                "id": "/subscriptions/a64fd3aa-b704-4942-b259-96843424d4d1/resourceGroups/de-assessment/providers/Microsoft.Network/privateEndpoints/pe-de-assessment-storage-blob/privateDnsZoneGroups/dns-group-blob",
+                "name": "dns-group-blob",
+                "private_dns_zone_ids": [
+                  "/subscriptions/a64fd3aa-b704-4942-b259-96843424d4d1/resourceGroups/de-assessment/providers/Microsoft.Network/privateDnsZones/privatelink.blob.core.windows.net"
+                ]
+              }
+            ],
+            "private_service_connection": [
+              {
+                "is_manual_connection": false,
+                "name": "psc-storage-blob",
+                "private_connection_resource_alias": "",
+                "private_connection_resource_id": "/subscriptions/a64fd3aa-b704-4942-b259-96843424d4d1/resourceGroups/de-assessment/providers/Microsoft.Storage/storageAccounts/deassessmentd06fabcc",
+                "private_ip_address": "10.0.1.5",
+                "request_message": "",
+                "subresource_names": [
+                  "blob"
+                ]
+              }
+            ],
+            "resource_group_name": "de-assessment",
+            "subnet_id": "/subscriptions/a64fd3aa-b704-4942-b259-96843424d4d1/resourceGroups/de-assessment/providers/Microsoft.Network/virtualNetworks/vnet-de-assessment/subnets/snet-private-endpoints",
+            "tags": {},
+            "timeouts": null
+          },
+          "sensitive_attributes": [],
+          "private": "eyJlMmJmYjczMC1lY2FhLTExZTYtOGY4OC0zNDM2M2JjN2M0YzAiOnsiY3JlYXRlIjozNjAwMDAwMDAwMDAwLCJkZWxldGUiOjM2MDAwMDAwMDAwMDAsInJlYWQiOjMwMDAwMDAwMDAwMCwidXBkYXRlIjozNjAwMDAwMDAwMDAwfX0=",
+          "dependencies": [
+            "azurerm_private_dns_zone.blob",
+            "azurerm_resource_group.rg",
+            "azurerm_storage_account.storage",
+            "azurerm_subnet.private_endpoints",
+            "azurerm_virtual_network.main",
+            "random_id.sa"
+          ]
+        }
+      ]
+    },
+    {
+      "mode": "managed",
+      "type": "azurerm_private_endpoint",
+      "name": "storage_dfs",
+      "provider": "provider[\"registry.terraform.io/hashicorp/azurerm\"]",
+      "instances": [
+        {
+          "schema_version": 0,
+          "attributes": {
+            "custom_dns_configs": [],
+            "custom_network_interface_name": "",
+            "id": "/subscriptions/a64fd3aa-b704-4942-b259-96843424d4d1/resourceGroups/de-assessment/providers/Microsoft.Network/privateEndpoints/pe-de-assessment-storage-dfs",
+            "ip_configuration": [],
+            "location": "westeurope",
+            "name": "pe-de-assessment-storage-dfs",
+            "network_interface": [
+              {
+                "id": "/subscriptions/a64fd3aa-b704-4942-b259-96843424d4d1/resourceGroups/de-assessment/providers/Microsoft.Network/networkInterfaces/pe-de-assessment-storage-dfs.nic.9a5c9cb6-8480-4d45-b7b5-f69080505a3d",
+                "name": "pe-de-assessment-storage-dfs.nic.9a5c9cb6-8480-4d45-b7b5-f69080505a3d"
+              }
+            ],
+            "private_dns_zone_configs": [
+              {
+                "id": "/subscriptions/a64fd3aa-b704-4942-b259-96843424d4d1/resourceGroups/de-assessment/providers/Microsoft.Network/privateEndpoints/pe-de-assessment-storage-dfs/privateDnsZoneGroups/dns-group-dfs/privateDnsZoneConfigs/privatelink.dfs.core.windows.net",
+                "name": "privatelink.dfs.core.windows.net",
+                "private_dns_zone_id": "/subscriptions/a64fd3aa-b704-4942-b259-96843424d4d1/resourceGroups/de-assessment/providers/Microsoft.Network/privateDnsZones/privatelink.dfs.core.windows.net",
+                "record_sets": [
+                  {
+                    "fqdn": "deassessmentd06fabcc.privatelink.dfs.core.windows.net",
+                    "ip_addresses": [
+                      "10.0.1.4"
+                    ],
+                    "name": "deassessmentd06fabcc",
+                    "ttl": 10,
+                    "type": "A"
+                  }
+                ]
+              }
+            ],
+            "private_dns_zone_group": [
+              {
+                "id": "/subscriptions/a64fd3aa-b704-4942-b259-96843424d4d1/resourceGroups/de-assessment/providers/Microsoft.Network/privateEndpoints/pe-de-assessment-storage-dfs/privateDnsZoneGroups/dns-group-dfs",
+                "name": "dns-group-dfs",
+                "private_dns_zone_ids": [
+                  "/subscriptions/a64fd3aa-b704-4942-b259-96843424d4d1/resourceGroups/de-assessment/providers/Microsoft.Network/privateDnsZones/privatelink.dfs.core.windows.net"
+                ]
+              }
+            ],
+            "private_service_connection": [
+              {
+                "is_manual_connection": false,
+                "name": "psc-storage-dfs",
+                "private_connection_resource_alias": "",
+                "private_connection_resource_id": "/subscriptions/a64fd3aa-b704-4942-b259-96843424d4d1/resourceGroups/de-assessment/providers/Microsoft.Storage/storageAccounts/deassessmentd06fabcc",
+                "private_ip_address": "10.0.1.4",
+                "request_message": "",
+                "subresource_names": [
+                  "dfs"
+                ]
+              }
+            ],
+            "resource_group_name": "de-assessment",
+            "subnet_id": "/subscriptions/a64fd3aa-b704-4942-b259-96843424d4d1/resourceGroups/de-assessment/providers/Microsoft.Network/virtualNetworks/vnet-de-assessment/subnets/snet-private-endpoints",
+            "tags": {},
+            "timeouts": null
+          },
+          "sensitive_attributes": [],
+          "private": "eyJlMmJmYjczMC1lY2FhLTExZTYtOGY4OC0zNDM2M2JjN2M0YzAiOnsiY3JlYXRlIjozNjAwMDAwMDAwMDAwLCJkZWxldGUiOjM2MDAwMDAwMDAwMDAsInJlYWQiOjMwMDAwMDAwMDAwMCwidXBkYXRlIjozNjAwMDAwMDAwMDAwfX0=",
+          "dependencies": [
+            "azurerm_private_dns_zone.dfs",
+            "azurerm_resource_group.rg",
+            "azurerm_storage_account.storage",
+            "azurerm_subnet.private_endpoints",
+            "azurerm_virtual_network.main",
+            "random_id.sa"
+          ]
+        }
+      ]
+    },
+    {
+      "mode": "managed",
+      "type": "azurerm_public_ip",
+      "name": "nat_gw",
+      "provider": "provider[\"registry.terraform.io/hashicorp/azurerm\"]",
+      "instances": [
+        {
+          "schema_version": 0,
+          "attributes": {
+            "allocation_method": "Static",
+            "ddos_protection_mode": "VirtualNetworkInherited",
+            "ddos_protection_plan_id": null,
+            "domain_name_label": "",
+            "domain_name_label_scope": "",
+            "edge_zone": "",
+            "fqdn": "",
+            "id": "/subscriptions/a64fd3aa-b704-4942-b259-96843424d4d1/resourceGroups/de-assessment/providers/Microsoft.Network/publicIPAddresses/pip-de-assessment-natgw",
+            "idle_timeout_in_minutes": 4,
+            "ip_address": "137.117.242.228",
+            "ip_tags": {},
+            "ip_version": "IPv4",
+            "location": "westeurope",
+            "name": "pip-de-assessment-natgw",
+            "public_ip_prefix_id": null,
+            "resource_group_name": "de-assessment",
+            "reverse_fqdn": "",
+            "sku": "Standard",
+            "sku_tier": "Regional",
+            "tags": {},
+            "timeouts": null,
+            "zones": []
+          },
+          "sensitive_attributes": [],
+          "private": "eyJlMmJmYjczMC1lY2FhLTExZTYtOGY4OC0zNDM2M2JjN2M0YzAiOnsiY3JlYXRlIjoxODAwMDAwMDAwMDAwLCJkZWxldGUiOjE4MDAwMDAwMDAwMDAsInJlYWQiOjMwMDAwMDAwMDAwMCwidXBkYXRlIjoxODAwMDAwMDAwMDAwfX0=",
+          "dependencies": [
+            "azurerm_resource_group.rg"
+          ]
+        }
+      ]
+    },
+    {
+      "mode": "managed",
+      "type": "azurerm_resource_group",
+      "name": "rg",
+      "provider": "provider[\"registry.terraform.io/hashicorp/azurerm\"]",
+      "instances": [
+        {
+          "schema_version": 0,
+          "attributes": {
+            "id": "/subscriptions/a64fd3aa-b704-4942-b259-96843424d4d1/resourceGroups/de-assessment",
+            "location": "westeurope",
+            "managed_by": "",
+            "name": "de-assessment",
+            "tags": {},
+            "timeouts": null
+          },
+          "sensitive_attributes": [],
+          "private": "eyJlMmJmYjczMC1lY2FhLTExZTYtOGY4OC0zNDM2M2JjN2M0YzAiOnsiY3JlYXRlIjo1NDAwMDAwMDAwMDAwLCJkZWxldGUiOjU0MDAwMDAwMDAwMDAsInJlYWQiOjMwMDAwMDAwMDAwMCwidXBkYXRlIjo1NDAwMDAwMDAwMDAwfX0="
+        }
+      ]
+    },
+    {
+      "mode": "managed",
+      "type": "azurerm_role_assignment",
+      "name": "adf_kv",
+      "provider": "provider[\"registry.terraform.io/hashicorp/azurerm\"]",
+      "instances": [
+        {
+          "schema_version": 0,
+          "attributes": {
+            "condition": "",
+            "condition_version": "",
+            "delegated_managed_identity_resource_id": "",
+            "description": "",
+            "id": "/subscriptions/a64fd3aa-b704-4942-b259-96843424d4d1/resourceGroups/de-assessment/providers/Microsoft.KeyVault/vaults/kv-de-assessment/providers/Microsoft.Authorization/roleAssignments/22dc2f8e-55cc-6cc8-cdd8-b77be67d60a6",
+            "name": "22dc2f8e-55cc-6cc8-cdd8-b77be67d60a6",
+            "principal_id": "00c05758-da81-4823-89bd-39774d4d9832",
+            "principal_type": "ServicePrincipal",
+            "role_definition_id": "/subscriptions/a64fd3aa-b704-4942-b259-96843424d4d1/providers/Microsoft.Authorization/roleDefinitions/4633458b-17de-408a-b874-0445c86b69e6",
+            "role_definition_name": "Key Vault Secrets User",
+            "scope": "/subscriptions/a64fd3aa-b704-4942-b259-96843424d4d1/resourceGroups/de-assessment/providers/Microsoft.KeyVault/vaults/kv-de-assessment",
+            "skip_service_principal_aad_check": null,
+            "timeouts": null
+          },
+          "sensitive_attributes": [],
+          "private": "eyJlMmJmYjczMC1lY2FhLTExZTYtOGY4OC0zNDM2M2JjN2M0YzAiOnsiY3JlYXRlIjoxODAwMDAwMDAwMDAwLCJkZWxldGUiOjE4MDAwMDAwMDAwMDAsInJlYWQiOjMwMDAwMDAwMDAwMH19",
+          "dependencies": [
+            "azurerm_data_factory.adf",
+            "azurerm_key_vault.kv",
+            "azurerm_resource_group.rg",
+            "data.azurerm_client_config.current"
+          ]
+        }
+      ]
+    },
+    {
+      "mode": "managed",
+      "type": "azurerm_role_assignment",
+      "name": "storage_access",
+      "provider": "provider[\"registry.terraform.io/hashicorp/azurerm\"]",
+      "instances": [
+        {
+          "schema_version": 0,
+          "attributes": {
+            "condition": "",
+            "condition_version": "",
+            "delegated_managed_identity_resource_id": "",
+            "description": "",
+            "id": "/subscriptions/a64fd3aa-b704-4942-b259-96843424d4d1/resourceGroups/de-assessment/providers/Microsoft.Storage/storageAccounts/deassessmentd06fabcc/providers/Microsoft.Authorization/roleAssignments/8f94a283-313f-6f63-a1ef-b822a68ad7ab",
+            "name": "8f94a283-313f-6f63-a1ef-b822a68ad7ab",
+            "principal_id": "ec625cfe-4cd1-4db7-a301-e4041114b4b2",
+            "principal_type": "ServicePrincipal",
+            "role_definition_id": "/subscriptions/a64fd3aa-b704-4942-b259-96843424d4d1/providers/Microsoft.Authorization/roleDefinitions/b7e6dc6d-f1e8-4753-8033-0f276bb0955b",
+            "role_definition_name": "Storage Blob Data Owner",
+            "scope": "/subscriptions/a64fd3aa-b704-4942-b259-96843424d4d1/resourceGroups/de-assessment/providers/Microsoft.Storage/storageAccounts/deassessmentd06fabcc",
+            "skip_service_principal_aad_check": null,
+            "timeouts": null
+          },
+          "sensitive_attributes": [],
+          "private": "eyJlMmJmYjczMC1lY2FhLTExZTYtOGY4OC0zNDM2M2JjN2M0YzAiOnsiY3JlYXRlIjoxODAwMDAwMDAwMDAwLCJkZWxldGUiOjE4MDAwMDAwMDAwMDAsInJlYWQiOjMwMDAwMDAwMDAwMH19",
+          "dependencies": [
+            "azurerm_resource_group.rg",
+            "azurerm_storage_account.storage",
+            "azurerm_user_assigned_identity.main",
+            "random_id.sa"
+          ]
+        }
+      ]
+    },
+    {
+      "mode": "managed",
+      "type": "azurerm_storage_account",
+      "name": "storage",
+      "provider": "provider[\"registry.terraform.io/hashicorp/azurerm\"]",
+      "instances": [
+        {
+          "schema_version": 4,
+          "attributes": {
+            "access_tier": "Hot",
+            "account_kind": "StorageV2",
+            "account_replication_type": "LRS",
+            "account_tier": "Standard",
+            "allow_nested_items_to_be_public": true,
+            "allowed_copy_scope": "",
+            "azure_files_authentication": [],
+            "blob_properties": [
+              {
+                "change_feed_enabled": false,
+                "change_feed_retention_in_days": 0,
+                "container_delete_retention_policy": [],
+                "cors_rule": [],
+                "default_service_version": "",
+                "delete_retention_policy": [],
+                "last_access_time_enabled": false,
+                "restore_policy": [],
+                "versioning_enabled": false
+              }
+            ],
+            "cross_tenant_replication_enabled": false,
+            "custom_domain": [],
+            "customer_managed_key": [],
+            "default_to_oauth_authentication": false,
+            "dns_endpoint_type": "Standard",
+            "edge_zone": "",
+            "https_traffic_only_enabled": true,
+            "id": "/subscriptions/a64fd3aa-b704-4942-b259-96843424d4d1/resourceGroups/de-assessment/providers/Microsoft.Storage/storageAccounts/deassessmentd06fabcc",
+            "identity": [],
+            "immutability_policy": [],
+            "infrastructure_encryption_enabled": false,
+            "is_hns_enabled": true,
+            "large_file_share_enabled": false,
+            "local_user_enabled": true,
+            "location": "westeurope",
+            "min_tls_version": "TLS1_2",
+            "name": "deassessmentd06fabcc",
+            "network_rules": [],
+            "nfsv3_enabled": false,
+            "primary_access_key": "32gxQcZc1suW+nL4Kvovbd4SY9c/AIJWZ+81/rtndldNNTnsVG+w1ds/U/vefekMjED2UtUwsr5W+AStdC9qMw==",
+            "primary_blob_connection_string": "DefaultEndpointsProtocol=https;BlobEndpoint=https://deassessmentd06fabcc.blob.core.windows.net/;AccountName=deassessmentd06fabcc;AccountKey=32gxQcZc1suW+nL4Kvovbd4SY9c/AIJWZ+81/rtndldNNTnsVG+w1ds/U/vefekMjED2UtUwsr5W+AStdC9qMw==",
+            "primary_blob_endpoint": "https://deassessmentd06fabcc.blob.core.windows.net/",
+            "primary_blob_host": "deassessmentd06fabcc.blob.core.windows.net",
+            "primary_blob_internet_endpoint": "",
+            "primary_blob_internet_host": "",
+            "primary_blob_microsoft_endpoint": "",
+            "primary_blob_microsoft_host": "",
+            "primary_connection_string": "DefaultEndpointsProtocol=https;AccountName=deassessmentd06fabcc;AccountKey=32gxQcZc1suW+nL4Kvovbd4SY9c/AIJWZ+81/rtndldNNTnsVG+w1ds/U/vefekMjED2UtUwsr5W+AStdC9qMw==;EndpointSuffix=core.windows.net",
+            "primary_dfs_endpoint": "https://deassessmentd06fabcc.dfs.core.windows.net/",
+            "primary_dfs_host": "deassessmentd06fabcc.dfs.core.windows.net",
+            "primary_dfs_internet_endpoint": "",
+            "primary_dfs_internet_host": "",
+            "primary_dfs_microsoft_endpoint": "",
+            "primary_dfs_microsoft_host": "",
+            "primary_file_endpoint": "https://deassessmentd06fabcc.file.core.windows.net/",
+            "primary_file_host": "deassessmentd06fabcc.file.core.windows.net",
+            "primary_file_internet_endpoint": "",
+            "primary_file_internet_host": "",
+            "primary_file_microsoft_endpoint": "",
+            "primary_file_microsoft_host": "",
+            "primary_location": "westeurope",
+            "primary_queue_endpoint": "https://deassessmentd06fabcc.queue.core.windows.net/",
+            "primary_queue_host": "deassessmentd06fabcc.queue.core.windows.net",
+            "primary_queue_microsoft_endpoint": "",
+            "primary_queue_microsoft_host": "",
+            "primary_table_endpoint": "https://deassessmentd06fabcc.table.core.windows.net/",
+            "primary_table_host": "deassessmentd06fabcc.table.core.windows.net",
+            "primary_table_microsoft_endpoint": "",
+            "primary_table_microsoft_host": "",
+            "primary_web_endpoint": "https://deassessmentd06fabcc.z6.web.core.windows.net/",
+            "primary_web_host": "deassessmentd06fabcc.z6.web.core.windows.net",
+            "primary_web_internet_endpoint": "",
+            "primary_web_internet_host": "",
+            "primary_web_microsoft_endpoint": "",
+            "primary_web_microsoft_host": "",
+            "provisioned_billing_model_version": "",
+            "public_network_access_enabled": true,
+            "queue_encryption_key_type": "Service",
+            "queue_properties": [
+              {
+                "cors_rule": [],
+                "hour_metrics": [
+                  {
+                    "enabled": false,
+                    "include_apis": false,
+                    "retention_policy_days": 0,
+                    "version": "1.0"
+                  }
+                ],
+                "logging": [
+                  {
+                    "delete": false,
+                    "read": false,
+                    "retention_policy_days": 0,
+                    "version": "1.0",
+                    "write": false
+                  }
+                ],
+                "minute_metrics": [
+                  {
+                    "enabled": false,
+                    "include_apis": false,
+                    "retention_policy_days": 0,
+                    "version": "1.0"
+                  }
+                ]
+              }
+            ],
+            "resource_group_name": "de-assessment",
+            "routing": [],
+            "sas_policy": [],
+            "secondary_access_key": "u1ecPrVDy0CGqmiyFw+b6YaYzJFaozEu3E9eiLzsvuCihVu8rLw19LrzaXg5EEj6uGTdhrWGmxzm+AStLfjLgg==",
+            "secondary_blob_connection_string": "",
+            "secondary_blob_endpoint": "",
+            "secondary_blob_host": "",
+            "secondary_blob_internet_endpoint": "",
+            "secondary_blob_internet_host": "",
+            "secondary_blob_microsoft_endpoint": "",
+            "secondary_blob_microsoft_host": "",
+            "secondary_connection_string": "DefaultEndpointsProtocol=https;AccountName=deassessmentd06fabcc;AccountKey=u1ecPrVDy0CGqmiyFw+b6YaYzJFaozEu3E9eiLzsvuCihVu8rLw19LrzaXg5EEj6uGTdhrWGmxzm+AStLfjLgg==;EndpointSuffix=core.windows.net",
+            "secondary_dfs_endpoint": "",
+            "secondary_dfs_host": "",
+            "secondary_dfs_internet_endpoint": "",
+            "secondary_dfs_internet_host": "",
+            "secondary_dfs_microsoft_endpoint": "",
+            "secondary_dfs_microsoft_host": "",
+            "secondary_file_endpoint": "",
+            "secondary_file_host": "",
+            "secondary_file_internet_endpoint": "",
+            "secondary_file_internet_host": "",
+            "secondary_file_microsoft_endpoint": "",
+            "secondary_file_microsoft_host": "",
+            "secondary_location": "",
+            "secondary_queue_endpoint": "",
+            "secondary_queue_host": "",
+            "secondary_queue_microsoft_endpoint": "",
+            "secondary_queue_microsoft_host": "",
+            "secondary_table_endpoint": "",
+            "secondary_table_host": "",
+            "secondary_table_microsoft_endpoint": "",
+            "secondary_table_microsoft_host": "",
+            "secondary_web_endpoint": "",
+            "secondary_web_host": "",
+            "secondary_web_internet_endpoint": "",
+            "secondary_web_internet_host": "",
+            "secondary_web_microsoft_endpoint": "",
+            "secondary_web_microsoft_host": "",
+            "sftp_enabled": false,
+            "share_properties": [
+              {
+                "cors_rule": [],
+                "retention_policy": [
+                  {
+                    "days": 7
+                  }
+                ],
+                "smb": []
+              }
+            ],
+            "shared_access_key_enabled": true,
+            "static_website": [],
+            "table_encryption_key_type": "Service",
+            "tags": {},
+            "timeouts": null
+          },
+          "sensitive_attributes": [
+            [
+              {
+                "type": "get_attr",
+                "value": "primary_connection_string"
+              }
+            ],
+            [
+              {
+                "type": "get_attr",
+                "value": "secondary_connection_string"
+              }
+            ],
+            [
+              {
+                "type": "get_attr",
+                "value": "secondary_access_key"
+              }
+            ],
+            [
+              {
+                "type": "get_attr",
+                "value": "secondary_blob_connection_string"
+              }
+            ],
+            [
+              {
+                "type": "get_attr",
+                "value": "primary_access_key"
+              }
+            ],
+            [
+              {
+                "type": "get_attr",
+                "value": "primary_blob_connection_string"
+              }
+            ]
+          ],
+          "private": "eyJlMmJmYjczMC1lY2FhLTExZTYtOGY4OC0zNDM2M2JjN2M0YzAiOnsiY3JlYXRlIjozNjAwMDAwMDAwMDAwLCJkZWxldGUiOjM2MDAwMDAwMDAwMDAsInJlYWQiOjMwMDAwMDAwMDAwMCwidXBkYXRlIjozNjAwMDAwMDAwMDAwfSwic2NoZW1hX3ZlcnNpb24iOiI0In0=",
+          "dependencies": [
+            "azurerm_resource_group.rg",
+            "random_id.sa"
+          ]
+        }
+      ]
+    },
+    {
+      "mode": "managed",
+      "type": "azurerm_storage_data_lake_gen2_filesystem",
+      "name": "layers",
+      "provider": "provider[\"registry.terraform.io/hashicorp/azurerm\"]",
+      "instances": [
+        {
+          "index_key": "bronze",
+          "schema_version": 0,
+          "attributes": {
+            "ace": [
+              {
+                "id": "",
+                "permissions": "---",
+                "scope": "access",
+                "type": "other"
+              },
+              {
+                "id": "",
+                "permissions": "r-x",
+                "scope": "access",
+                "type": "group"
+              },
+              {
+                "id": "",
+                "permissions": "rwx",
+                "scope": "access",
+                "type": "user"
+              }
+            ],
+            "default_encryption_scope": "$account-encryption-key",
+            "group": "$superuser",
+            "id": "https://deassessmentd06fabcc.dfs.core.windows.net/bronze",
+            "name": "bronze",
+            "owner": "$superuser",
+            "properties": {},
+            "storage_account_id": "/subscriptions/a64fd3aa-b704-4942-b259-96843424d4d1/resourceGroups/de-assessment/providers/Microsoft.Storage/storageAccounts/deassessmentd06fabcc",
+            "timeouts": null
+          },
+          "sensitive_attributes": [],
+          "private": "eyJlMmJmYjczMC1lY2FhLTExZTYtOGY4OC0zNDM2M2JjN2M0YzAiOnsiY3JlYXRlIjoxODAwMDAwMDAwMDAwLCJkZWxldGUiOjE4MDAwMDAwMDAwMDAsInJlYWQiOjMwMDAwMDAwMDAwMCwidXBkYXRlIjoxODAwMDAwMDAwMDAwfX0=",
+          "dependencies": [
+            "azurerm_resource_group.rg",
+            "azurerm_storage_account.storage",
+            "random_id.sa"
+          ]
+        },
+        {
+          "index_key": "gold",
+          "schema_version": 0,
+          "attributes": {
+            "ace": [
+              {
+                "id": "",
+                "permissions": "---",
+                "scope": "access",
+                "type": "other"
+              },
+              {
+                "id": "",
+                "permissions": "r-x",
+                "scope": "access",
+                "type": "group"
+              },
+              {
+                "id": "",
+                "permissions": "rwx",
+                "scope": "access",
+                "type": "user"
+              }
+            ],
+            "default_encryption_scope": "$account-encryption-key",
+            "group": "$superuser",
+            "id": "https://deassessmentd06fabcc.dfs.core.windows.net/gold",
+            "name": "gold",
+            "owner": "$superuser",
+            "properties": {},
+            "storage_account_id": "/subscriptions/a64fd3aa-b704-4942-b259-96843424d4d1/resourceGroups/de-assessment/providers/Microsoft.Storage/storageAccounts/deassessmentd06fabcc",
+            "timeouts": null
+          },
+          "sensitive_attributes": [],
+          "private": "eyJlMmJmYjczMC1lY2FhLTExZTYtOGY4OC0zNDM2M2JjN2M0YzAiOnsiY3JlYXRlIjoxODAwMDAwMDAwMDAwLCJkZWxldGUiOjE4MDAwMDAwMDAwMDAsInJlYWQiOjMwMDAwMDAwMDAwMCwidXBkYXRlIjoxODAwMDAwMDAwMDAwfX0=",
+          "dependencies": [
+            "azurerm_resource_group.rg",
+            "azurerm_storage_account.storage",
+            "random_id.sa"
+          ]
+        },
+        {
+          "index_key": "raw",
+          "schema_version": 0,
+          "attributes": {
+            "ace": [
+              {
+                "id": "",
+                "permissions": "---",
+                "scope": "access",
+                "type": "other"
+              },
+              {
+                "id": "",
+                "permissions": "r-x",
+                "scope": "access",
+                "type": "group"
+              },
+              {
+                "id": "",
+                "permissions": "rwx",
+                "scope": "access",
+                "type": "user"
+              }
+            ],
+            "default_encryption_scope": "$account-encryption-key",
+            "group": "$superuser",
+            "id": "https://deassessmentd06fabcc.dfs.core.windows.net/raw",
+            "name": "raw",
+            "owner": "$superuser",
+            "properties": {},
+            "storage_account_id": "/subscriptions/a64fd3aa-b704-4942-b259-96843424d4d1/resourceGroups/de-assessment/providers/Microsoft.Storage/storageAccounts/deassessmentd06fabcc",
+            "timeouts": null
+          },
+          "sensitive_attributes": [],
+          "private": "eyJlMmJmYjczMC1lY2FhLTExZTYtOGY4OC0zNDM2M2JjN2M0YzAiOnsiY3JlYXRlIjoxODAwMDAwMDAwMDAwLCJkZWxldGUiOjE4MDAwMDAwMDAwMDAsInJlYWQiOjMwMDAwMDAwMDAwMCwidXBkYXRlIjoxODAwMDAwMDAwMDAwfX0=",
+          "dependencies": [
+            "azurerm_resource_group.rg",
+            "azurerm_storage_account.storage",
+            "random_id.sa"
+          ]
+        },
+        {
+          "index_key": "silver",
+          "schema_version": 0,
+          "attributes": {
+            "ace": [
+              {
+                "id": "",
+                "permissions": "---",
+                "scope": "access",
+                "type": "other"
+              },
+              {
+                "id": "",
+                "permissions": "r-x",
+                "scope": "access",
+                "type": "group"
+              },
+              {
+                "id": "",
+                "permissions": "rwx",
+                "scope": "access",
+                "type": "user"
+              }
+            ],
+            "default_encryption_scope": "$account-encryption-key",
+            "group": "$superuser",
+            "id": "https://deassessmentd06fabcc.dfs.core.windows.net/silver",
+            "name": "silver",
+            "owner": "$superuser",
+            "properties": {},
+            "storage_account_id": "/subscriptions/a64fd3aa-b704-4942-b259-96843424d4d1/resourceGroups/de-assessment/providers/Microsoft.Storage/storageAccounts/deassessmentd06fabcc",
+            "timeouts": null
+          },
+          "sensitive_attributes": [],
+          "private": "eyJlMmJmYjczMC1lY2FhLTExZTYtOGY4OC0zNDM2M2JjN2M0YzAiOnsiY3JlYXRlIjoxODAwMDAwMDAwMDAwLCJkZWxldGUiOjE4MDAwMDAwMDAwMDAsInJlYWQiOjMwMDAwMDAwMDAwMCwidXBkYXRlIjoxODAwMDAwMDAwMDAwfX0=",
+          "dependencies": [
+            "azurerm_resource_group.rg",
+            "azurerm_storage_account.storage",
+            "random_id.sa"
+          ]
+        }
+      ]
+    },
+    {
+      "mode": "managed",
+      "type": "azurerm_storage_data_lake_gen2_filesystem",
+      "name": "uc_managed",
+      "provider": "provider[\"registry.terraform.io/hashicorp/azurerm\"]",
+      "instances": [
+        {
+          "schema_version": 0,
+          "attributes": {
+            "ace": [
+              {
+                "id": "",
+                "permissions": "---",
+                "scope": "access",
+                "type": "other"
+              },
+              {
+                "id": "",
+                "permissions": "r-x",
+                "scope": "access",
+                "type": "group"
+              },
+              {
+                "id": "",
+                "permissions": "rwx",
+                "scope": "access",
+                "type": "user"
+              }
+            ],
+            "default_encryption_scope": "$account-encryption-key",
+            "group": "$superuser",
+            "id": "https://deassessmentd06fabcc.dfs.core.windows.net/uc-managed",
+            "name": "uc-managed",
+            "owner": "$superuser",
+            "properties": {},
+            "storage_account_id": "/subscriptions/a64fd3aa-b704-4942-b259-96843424d4d1/resourceGroups/de-assessment/providers/Microsoft.Storage/storageAccounts/deassessmentd06fabcc",
+            "timeouts": null
+          },
+          "sensitive_attributes": [],
+          "private": "eyJlMmJmYjczMC1lY2FhLTExZTYtOGY4OC0zNDM2M2JjN2M0YzAiOnsiY3JlYXRlIjoxODAwMDAwMDAwMDAwLCJkZWxldGUiOjE4MDAwMDAwMDAwMDAsInJlYWQiOjMwMDAwMDAwMDAwMCwidXBkYXRlIjoxODAwMDAwMDAwMDAwfX0=",
+          "dependencies": [
+            "azurerm_resource_group.rg",
+            "azurerm_storage_account.storage",
+            "random_id.sa"
+          ]
+        }
+      ]
+    },
+    {
+      "mode": "managed",
+      "type": "azurerm_subnet",
+      "name": "dbx_container",
+      "provider": "provider[\"registry.terraform.io/hashicorp/azurerm\"]",
+      "instances": [
+        {
+          "schema_version": 0,
+          "attributes": {
+            "address_prefixes": [
+              "10.0.3.0/24"
+            ],
+            "default_outbound_access_enabled": true,
+            "delegation": [
+              {
+                "name": "databricks-delegation",
+                "service_delegation": [
+                  {
+                    "actions": [
+                      "Microsoft.Network/virtualNetworks/subnets/join/action",
+                      "Microsoft.Network/virtualNetworks/subnets/prepareNetworkPolicies/action",
+                      "Microsoft.Network/virtualNetworks/subnets/unprepareNetworkPolicies/action"
+                    ],
+                    "name": "Microsoft.Databricks/workspaces"
+                  }
+                ]
+              }
+            ],
+            "id": "/subscriptions/a64fd3aa-b704-4942-b259-96843424d4d1/resourceGroups/de-assessment/providers/Microsoft.Network/virtualNetworks/vnet-de-assessment/subnets/snet-dbx-container",
+            "ip_address_pool": [],
+            "name": "snet-dbx-container",
+            "private_endpoint_network_policies": "Disabled",
+            "private_link_service_network_policies_enabled": true,
+            "resource_group_name": "de-assessment",
+            "service_endpoint_policy_ids": [],
+            "service_endpoints": [],
+            "sharing_scope": "",
+            "timeouts": null,
+            "virtual_network_name": "vnet-de-assessment"
+          },
+          "sensitive_attributes": [],
+          "private": "eyJlMmJmYjczMC1lY2FhLTExZTYtOGY4OC0zNDM2M2JjN2M0YzAiOnsiY3JlYXRlIjoxODAwMDAwMDAwMDAwLCJkZWxldGUiOjE4MDAwMDAwMDAwMDAsInJlYWQiOjMwMDAwMDAwMDAwMCwidXBkYXRlIjoxODAwMDAwMDAwMDAwfX0=",
+          "dependencies": [
+            "azurerm_resource_group.rg",
+            "azurerm_virtual_network.main"
+          ]
+        }
+      ]
+    },
+    {
+      "mode": "managed",
+      "type": "azurerm_subnet",
+      "name": "dbx_host",
+      "provider": "provider[\"registry.terraform.io/hashicorp/azurerm\"]",
+      "instances": [
+        {
+          "schema_version": 0,
+          "attributes": {
+            "address_prefixes": [
+              "10.0.2.0/24"
+            ],
+            "default_outbound_access_enabled": true,
+            "delegation": [
+              {
+                "name": "databricks-delegation",
+                "service_delegation": [
+                  {
+                    "actions": [
+                      "Microsoft.Network/virtualNetworks/subnets/join/action",
+                      "Microsoft.Network/virtualNetworks/subnets/prepareNetworkPolicies/action",
+                      "Microsoft.Network/virtualNetworks/subnets/unprepareNetworkPolicies/action"
+                    ],
+                    "name": "Microsoft.Databricks/workspaces"
+                  }
+                ]
+              }
+            ],
+            "id": "/subscriptions/a64fd3aa-b704-4942-b259-96843424d4d1/resourceGroups/de-assessment/providers/Microsoft.Network/virtualNetworks/vnet-de-assessment/subnets/snet-dbx-host",
+            "ip_address_pool": [],
+            "name": "snet-dbx-host",
+            "private_endpoint_network_policies": "Disabled",
+            "private_link_service_network_policies_enabled": true,
+            "resource_group_name": "de-assessment",
+            "service_endpoint_policy_ids": [],
+            "service_endpoints": [],
+            "sharing_scope": "",
+            "timeouts": null,
+            "virtual_network_name": "vnet-de-assessment"
+          },
+          "sensitive_attributes": [],
+          "private": "eyJlMmJmYjczMC1lY2FhLTExZTYtOGY4OC0zNDM2M2JjN2M0YzAiOnsiY3JlYXRlIjoxODAwMDAwMDAwMDAwLCJkZWxldGUiOjE4MDAwMDAwMDAwMDAsInJlYWQiOjMwMDAwMDAwMDAwMCwidXBkYXRlIjoxODAwMDAwMDAwMDAwfX0=",
+          "dependencies": [
+            "azurerm_resource_group.rg",
+            "azurerm_virtual_network.main"
+          ]
+        }
+      ]
+    },
+    {
+      "mode": "managed",
+      "type": "azurerm_subnet",
+      "name": "private_endpoints",
+      "provider": "provider[\"registry.terraform.io/hashicorp/azurerm\"]",
+      "instances": [
+        {
+          "schema_version": 0,
+          "attributes": {
+            "address_prefixes": [
+              "10.0.1.0/24"
+            ],
+            "default_outbound_access_enabled": true,
+            "delegation": [],
+            "id": "/subscriptions/a64fd3aa-b704-4942-b259-96843424d4d1/resourceGroups/de-assessment/providers/Microsoft.Network/virtualNetworks/vnet-de-assessment/subnets/snet-private-endpoints",
+            "ip_address_pool": [],
+            "name": "snet-private-endpoints",
+            "private_endpoint_network_policies": "Disabled",
+            "private_link_service_network_policies_enabled": true,
+            "resource_group_name": "de-assessment",
+            "service_endpoint_policy_ids": [],
+            "service_endpoints": [],
+            "sharing_scope": "",
+            "timeouts": null,
+            "virtual_network_name": "vnet-de-assessment"
+          },
+          "sensitive_attributes": [],
+          "private": "eyJlMmJmYjczMC1lY2FhLTExZTYtOGY4OC0zNDM2M2JjN2M0YzAiOnsiY3JlYXRlIjoxODAwMDAwMDAwMDAwLCJkZWxldGUiOjE4MDAwMDAwMDAwMDAsInJlYWQiOjMwMDAwMDAwMDAwMCwidXBkYXRlIjoxODAwMDAwMDAwMDAwfX0=",
+          "dependencies": [
+            "azurerm_resource_group.rg",
+            "azurerm_virtual_network.main"
+          ]
+        }
+      ]
+    },
+    {
+      "mode": "managed",
+      "type": "azurerm_subnet_nat_gateway_association",
+      "name": "dbx_container",
+      "provider": "provider[\"registry.terraform.io/hashicorp/azurerm\"]",
+      "instances": [
+        {
+          "schema_version": 0,
+          "attributes": {
+            "id": "/subscriptions/a64fd3aa-b704-4942-b259-96843424d4d1/resourceGroups/de-assessment/providers/Microsoft.Network/virtualNetworks/vnet-de-assessment/subnets/snet-dbx-container",
+            "nat_gateway_id": "/subscriptions/a64fd3aa-b704-4942-b259-96843424d4d1/resourceGroups/de-assessment/providers/Microsoft.Network/natGateways/natgw-de-assessment",
+            "subnet_id": "/subscriptions/a64fd3aa-b704-4942-b259-96843424d4d1/resourceGroups/de-assessment/providers/Microsoft.Network/virtualNetworks/vnet-de-assessment/subnets/snet-dbx-container",
+            "timeouts": null
+          },
+          "sensitive_attributes": [],
+          "private": "eyJlMmJmYjczMC1lY2FhLTExZTYtOGY4OC0zNDM2M2JjN2M0YzAiOnsiY3JlYXRlIjoxODAwMDAwMDAwMDAwLCJkZWxldGUiOjE4MDAwMDAwMDAwMDAsInJlYWQiOjMwMDAwMDAwMDAwMH19",
+          "dependencies": [
+            "azurerm_nat_gateway.main",
+            "azurerm_resource_group.rg",
+            "azurerm_subnet.dbx_container",
+            "azurerm_virtual_network.main"
+          ]
+        }
+      ]
+    },
+    {
+      "mode": "managed",
+      "type": "azurerm_subnet_nat_gateway_association",
+      "name": "dbx_host",
+      "provider": "provider[\"registry.terraform.io/hashicorp/azurerm\"]",
+      "instances": [
+        {
+          "schema_version": 0,
+          "attributes": {
+            "id": "/subscriptions/a64fd3aa-b704-4942-b259-96843424d4d1/resourceGroups/de-assessment/providers/Microsoft.Network/virtualNetworks/vnet-de-assessment/subnets/snet-dbx-host",
+            "nat_gateway_id": "/subscriptions/a64fd3aa-b704-4942-b259-96843424d4d1/resourceGroups/de-assessment/providers/Microsoft.Network/natGateways/natgw-de-assessment",
+            "subnet_id": "/subscriptions/a64fd3aa-b704-4942-b259-96843424d4d1/resourceGroups/de-assessment/providers/Microsoft.Network/virtualNetworks/vnet-de-assessment/subnets/snet-dbx-host",
+            "timeouts": null
+          },
+          "sensitive_attributes": [],
+          "private": "eyJlMmJmYjczMC1lY2FhLTExZTYtOGY4OC0zNDM2M2JjN2M0YzAiOnsiY3JlYXRlIjoxODAwMDAwMDAwMDAwLCJkZWxldGUiOjE4MDAwMDAwMDAwMDAsInJlYWQiOjMwMDAwMDAwMDAwMH19",
+          "dependencies": [
+            "azurerm_nat_gateway.main",
+            "azurerm_resource_group.rg",
+            "azurerm_subnet.dbx_host",
+            "azurerm_virtual_network.main"
+          ]
+        }
+      ]
+    },
+    {
+      "mode": "managed",
+      "type": "azurerm_subnet_network_security_group_association",
+      "name": "dbx_container",
+      "provider": "provider[\"registry.terraform.io/hashicorp/azurerm\"]",
+      "instances": [
+        {
+          "schema_version": 0,
+          "attributes": {
+            "id": "/subscriptions/a64fd3aa-b704-4942-b259-96843424d4d1/resourceGroups/de-assessment/providers/Microsoft.Network/virtualNetworks/vnet-de-assessment/subnets/snet-dbx-container",
+            "network_security_group_id": "/subscriptions/a64fd3aa-b704-4942-b259-96843424d4d1/resourceGroups/de-assessment/providers/Microsoft.Network/networkSecurityGroups/nsg-de-assessment-dbx",
+            "subnet_id": "/subscriptions/a64fd3aa-b704-4942-b259-96843424d4d1/resourceGroups/de-assessment/providers/Microsoft.Network/virtualNetworks/vnet-de-assessment/subnets/snet-dbx-container",
+            "timeouts": null
+          },
+          "sensitive_attributes": [],
+          "private": "eyJlMmJmYjczMC1lY2FhLTExZTYtOGY4OC0zNDM2M2JjN2M0YzAiOnsiY3JlYXRlIjoxODAwMDAwMDAwMDAwLCJkZWxldGUiOjE4MDAwMDAwMDAwMDAsInJlYWQiOjMwMDAwMDAwMDAwMH19",
+          "dependencies": [
+            "azurerm_network_security_group.dbx",
+            "azurerm_resource_group.rg",
+            "azurerm_subnet.dbx_container",
+            "azurerm_virtual_network.main"
+          ]
+        }
+      ]
+    },
+    {
+      "mode": "managed",
+      "type": "azurerm_subnet_network_security_group_association",
+      "name": "dbx_host",
+      "provider": "provider[\"registry.terraform.io/hashicorp/azurerm\"]",
+      "instances": [
+        {
+          "schema_version": 0,
+          "attributes": {
+            "id": "/subscriptions/a64fd3aa-b704-4942-b259-96843424d4d1/resourceGroups/de-assessment/providers/Microsoft.Network/virtualNetworks/vnet-de-assessment/subnets/snet-dbx-host",
+            "network_security_group_id": "/subscriptions/a64fd3aa-b704-4942-b259-96843424d4d1/resourceGroups/de-assessment/providers/Microsoft.Network/networkSecurityGroups/nsg-de-assessment-dbx",
+            "subnet_id": "/subscriptions/a64fd3aa-b704-4942-b259-96843424d4d1/resourceGroups/de-assessment/providers/Microsoft.Network/virtualNetworks/vnet-de-assessment/subnets/snet-dbx-host",
+            "timeouts": null
+          },
+          "sensitive_attributes": [],
+          "private": "eyJlMmJmYjczMC1lY2FhLTExZTYtOGY4OC0zNDM2M2JjN2M0YzAiOnsiY3JlYXRlIjoxODAwMDAwMDAwMDAwLCJkZWxldGUiOjE4MDAwMDAwMDAwMDAsInJlYWQiOjMwMDAwMDAwMDAwMH19",
+          "dependencies": [
+            "azurerm_network_security_group.dbx",
+            "azurerm_resource_group.rg",
+            "azurerm_subnet.dbx_host",
+            "azurerm_virtual_network.main"
+          ]
+        }
+      ]
+    },
+    {
+      "mode": "managed",
+      "type": "azurerm_user_assigned_identity",
+      "name": "main",
+      "provider": "provider[\"registry.terraform.io/hashicorp/azurerm\"]",
+      "instances": [
+        {
+          "schema_version": 1,
+          "attributes": {
+            "client_id": "52d38412-e705-4157-a0c5-bf7db84090c6",
+            "id": "/subscriptions/a64fd3aa-b704-4942-b259-96843424d4d1/resourceGroups/de-assessment/providers/Microsoft.ManagedIdentity/userAssignedIdentities/uai-de-assessment",
+            "isolation_scope": "",
+            "location": "westeurope",
+            "name": "uai-de-assessment",
+            "principal_id": "ec625cfe-4cd1-4db7-a301-e4041114b4b2",
+            "resource_group_name": "de-assessment",
+            "tags": {},
+            "tenant_id": "186c3021-d0e1-4353-b0d9-d9b642e5dd44",
+            "timeouts": null
+          },
+          "sensitive_attributes": [],
+          "private": "eyJlMmJmYjczMC1lY2FhLTExZTYtOGY4OC0zNDM2M2JjN2M0YzAiOnsiY3JlYXRlIjoxODAwMDAwMDAwMDAwLCJkZWxldGUiOjE4MDAwMDAwMDAwMDAsInJlYWQiOjMwMDAwMDAwMDAwMCwidXBkYXRlIjoxODAwMDAwMDAwMDAwfSwic2NoZW1hX3ZlcnNpb24iOiIxIn0=",
+          "dependencies": [
+            "azurerm_resource_group.rg"
+          ]
+        }
+      ]
+    },
+    {
+      "mode": "managed",
+      "type": "azurerm_virtual_network",
+      "name": "main",
+      "provider": "provider[\"registry.terraform.io/hashicorp/azurerm\"]",
+      "instances": [
+        {
+          "schema_version": 0,
+          "attributes": {
+            "address_space": [
+              "10.0.0.0/16"
+            ],
+            "bgp_community": "",
+            "ddos_protection_plan": [],
+            "dns_servers": [],
+            "edge_zone": "",
+            "encryption": [],
+            "flow_timeout_in_minutes": 0,
+            "guid": "1987a55b-3468-4761-87bc-069bec7c8a7f",
+            "id": "/subscriptions/a64fd3aa-b704-4942-b259-96843424d4d1/resourceGroups/de-assessment/providers/Microsoft.Network/virtualNetworks/vnet-de-assessment",
+            "ip_address_pool": [],
+            "location": "westeurope",
+            "name": "vnet-de-assessment",
+            "private_endpoint_vnet_policies": "Disabled",
+            "resource_group_name": "de-assessment",
+            "subnet": [
+              {
+                "address_prefixes": [
+                  "10.0.1.0/24"
+                ],
+                "default_outbound_access_enabled": true,
+                "delegation": [],
+                "id": "/subscriptions/a64fd3aa-b704-4942-b259-96843424d4d1/resourceGroups/de-assessment/providers/Microsoft.Network/virtualNetworks/vnet-de-assessment/subnets/snet-private-endpoints",
+                "name": "snet-private-endpoints",
+                "private_endpoint_network_policies": "Disabled",
+                "private_link_service_network_policies_enabled": true,
+                "route_table_id": "",
+                "security_group": "",
+                "service_endpoint_policy_ids": [],
+                "service_endpoints": []
+              },
+              {
+                "address_prefixes": [
+                  "10.0.2.0/24"
+                ],
+                "default_outbound_access_enabled": true,
+                "delegation": [
+                  {
+                    "name": "databricks-delegation",
+                    "service_delegation": [
+                      {
+                        "actions": [
+                          "Microsoft.Network/virtualNetworks/subnets/join/action",
+                          "Microsoft.Network/virtualNetworks/subnets/prepareNetworkPolicies/action",
+                          "Microsoft.Network/virtualNetworks/subnets/unprepareNetworkPolicies/action"
+                        ],
+                        "name": "Microsoft.Databricks/workspaces"
+                      }
+                    ]
+                  }
+                ],
+                "id": "/subscriptions/a64fd3aa-b704-4942-b259-96843424d4d1/resourceGroups/de-assessment/providers/Microsoft.Network/virtualNetworks/vnet-de-assessment/subnets/snet-dbx-host",
+                "name": "snet-dbx-host",
+                "private_endpoint_network_policies": "Disabled",
+                "private_link_service_network_policies_enabled": true,
+                "route_table_id": "",
+                "security_group": "/subscriptions/a64fd3aa-b704-4942-b259-96843424d4d1/resourceGroups/de-assessment/providers/Microsoft.Network/networkSecurityGroups/nsg-de-assessment-dbx",
+                "service_endpoint_policy_ids": [],
+                "service_endpoints": []
+              },
+              {
+                "address_prefixes": [
+                  "10.0.3.0/24"
+                ],
+                "default_outbound_access_enabled": true,
+                "delegation": [
+                  {
+                    "name": "databricks-delegation",
+                    "service_delegation": [
+                      {
+                        "actions": [
+                          "Microsoft.Network/virtualNetworks/subnets/join/action",
+                          "Microsoft.Network/virtualNetworks/subnets/prepareNetworkPolicies/action",
+                          "Microsoft.Network/virtualNetworks/subnets/unprepareNetworkPolicies/action"
+                        ],
+                        "name": "Microsoft.Databricks/workspaces"
+                      }
+                    ]
+                  }
+                ],
+                "id": "/subscriptions/a64fd3aa-b704-4942-b259-96843424d4d1/resourceGroups/de-assessment/providers/Microsoft.Network/virtualNetworks/vnet-de-assessment/subnets/snet-dbx-container",
+                "name": "snet-dbx-container",
+                "private_endpoint_network_policies": "Disabled",
+                "private_link_service_network_policies_enabled": true,
+                "route_table_id": "",
+                "security_group": "/subscriptions/a64fd3aa-b704-4942-b259-96843424d4d1/resourceGroups/de-assessment/providers/Microsoft.Network/networkSecurityGroups/nsg-de-assessment-dbx",
+                "service_endpoint_policy_ids": [],
+                "service_endpoints": []
+              }
+            ],
+            "tags": {},
+            "timeouts": null
+          },
+          "sensitive_attributes": [],
+          "private": "eyJlMmJmYjczMC1lY2FhLTExZTYtOGY4OC0zNDM2M2JjN2M0YzAiOnsiY3JlYXRlIjoxODAwMDAwMDAwMDAwLCJkZWxldGUiOjE4MDAwMDAwMDAwMDAsInJlYWQiOjMwMDAwMDAwMDAwMCwidXBkYXRlIjoxODAwMDAwMDAwMDAwfX0=",
+          "dependencies": [
+            "azurerm_resource_group.rg"
+          ]
+        }
+      ]
+    },
+    {
+      "mode": "managed",
+      "type": "random_id",
+      "name": "sa",
+      "provider": "provider[\"registry.terraform.io/hashicorp/random\"]",
+      "instances": [
+        {
+          "schema_version": 0,
+          "attributes": {
+            "b64_std": "0G+rzA==",
+            "b64_url": "0G-rzA",
+            "byte_length": 4,
+            "dec": "3496979404",
+            "hex": "d06fabcc",
+            "id": "0G-rzA",
+            "keepers": null,
+            "prefix": null
+          },
+          "sensitive_attributes": []
+        }
+      ]
+    }
+  ],
+  "check_results": [
+    {
+      "object_kind": "var",
+      "config_addr": "var.environment",
+      "status": "pass",
+      "objects": [
+        {
+          "object_addr": "var.environment",
+          "status": "pass"
+        }
+      ]
+    }
+  ]
+}

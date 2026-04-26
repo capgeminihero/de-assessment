@@ -1,0 +1,62 @@
+{
+  "version": 4,
+  "terraform_version": "1.10.2",
+  "serial": 1,
+  "lineage": "40cb4876-2867-007c-def0-a8ffd1edeef2",
+  "outputs": {},
+  "resources": [
+    {
+      "mode": "managed",
+      "type": "azuread_group",
+      "name": "dev_team",
+      "provider": "provider[\"registry.terraform.io/hashicorp/azuread\"]",
+      "instances": [
+        {
+          "schema_version": 1,
+          "attributes": {
+            "administrative_unit_ids": [],
+            "assignable_to_role": false,
+            "auto_subscribe_new_members": false,
+            "behaviors": [],
+            "description": "",
+            "display_name": "DE-Dev-Team",
+            "dynamic_membership": [],
+            "external_senders_allowed": false,
+            "hide_from_address_lists": false,
+            "hide_from_outlook_clients": false,
+            "id": "/groups/baa52807-c988-4c40-88c2-5cc77233c706",
+            "mail": "",
+            "mail_enabled": false,
+            "mail_nickname": "39ace55f-0",
+            "members": [
+              "9c30edd5-e73a-44fc-8b02-ed78e182f0cd"
+            ],
+            "object_id": "baa52807-c988-4c40-88c2-5cc77233c706",
+            "onpremises_domain_name": "",
+            "onpremises_group_type": "",
+            "onpremises_netbios_name": "",
+            "onpremises_sam_account_name": "",
+            "onpremises_security_identifier": "",
+            "onpremises_sync_enabled": false,
+            "owners": [
+              "9c30edd5-e73a-44fc-8b02-ed78e182f0cd"
+            ],
+            "preferred_language": "",
+            "prevent_duplicate_names": false,
+            "provisioning_options": [],
+            "proxy_addresses": [],
+            "security_enabled": true,
+            "theme": "",
+            "timeouts": null,
+            "types": [],
+            "visibility": "",
+            "writeback_enabled": false
+          },
+          "sensitive_attributes": [],
+          "private": "eyJlMmJmYjczMC1lY2FhLTExZTYtOGY4OC0zNDM2M2JjN2M0YzAiOnsiY3JlYXRlIjoxODAwMDAwMDAwMDAwLCJkZWxldGUiOjMwMDAwMDAwMDAwMCwicmVhZCI6MzAwMDAwMDAwMDAwLCJ1cGRhdGUiOjE4MDAwMDAwMDAwMDB9LCJzY2hlbWFfdmVyc2lvbiI6IjEifQ=="
+        }
+      ]
+    }
+  ],
+  "check_results": null
+}
