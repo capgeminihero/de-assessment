@@ -67,18 +67,21 @@ resource "databricks_group" "dev_team" {
   provider     = databricks.accounts
   count        = var.environment == "dev" ? 1 : 0
   display_name = "DE-Dev-Team"
+  external_id  = "baa52807-c988-4c40-88c2-5cc77233c706"
   force        = true
 }
 
 resource "databricks_group" "compliance_team" {
   provider     = databricks.accounts
   display_name = "Compliance-Team"
+  external_id  = "ad214b15-7987-42f7-abf8-5942e01c93cf"
   force        = true
 }
 
 resource "databricks_group" "analyst_team" {
   provider     = databricks.accounts
   display_name = "DA-Analyst-Team"
+  external_id  = "71da8424-34c3-4b4e-8fbe-87004d57a729"
   force        = true
 }
 
@@ -130,24 +133,5 @@ resource "databricks_service_principal" "pipeline" {
   display_name = "sp-${var.project}-pipeline"
 }
 
-# NOTE: databricks_grants is AUTHORITATIVE — it replaces ALL grants on the resource.
-# Both the developer group and pipeline SP must be in a SINGLE resource per object.
-# Two separate databricks_grants on the same catalog would overwrite each other.
-
-resource "databricks_grants" "catalog" {
-  catalog    = databricks_catalog.main.name
-  depends_on = [databricks_mws_permission_assignment.dev_team]
-
-  dynamic "grant" {
-    for_each = var.environment == "dev" ? [1] : []
-    content {
-      principal  = data.databricks_current_user.deployer.user_name
-      privileges = ["USE_CATALOG", "CREATE_SCHEMA", "USE_SCHEMA", "CREATE_TABLE", "SELECT", "MODIFY"]
-    }
-  }
-
-  grant {
-    principal  = databricks_service_principal.pipeline.application_id
-    privileges = ["USE_CATALOG", "USE_SCHEMA", "CREATE_TABLE", "SELECT", "MODIFY"]
-  }
-}
+# Catalog-level grants are managed via SQL in the Bronze notebook
+# to satisfy assessment requirements for notebook-based access control demonstration.
