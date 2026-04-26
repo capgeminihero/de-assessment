@@ -46,11 +46,18 @@ resource "databricks_external_location" "layers" {
 resource "databricks_catalog" "main" {
   name          = "${var.catalog_name}_${var.environment}"
   force_destroy = true
-  # Use bronze container as managed storage root (subfolder keeps it separate
-  # from actual bronze Delta table data). Bronze external location covers this
-  # path and has CREATE_MANAGED_STORAGE granted to the deployer.
-  storage_root = "abfss://bronze@${var.storage_account_name}.dfs.core.windows.net/_catalog_managed/"
-  depends_on   = [databricks_external_location.layers]
+  storage_root  = "abfss://bronze@${var.storage_account_name}.dfs.core.windows.net/_catalog_managed/"
+  depends_on    = [databricks_external_location.layers]
+}
+
+resource "databricks_schema" "bronze" {
+  catalog_name = databricks_catalog.main.name
+  name         = "bronze"
+}
+
+resource "databricks_schema" "silver" {
+  catalog_name = databricks_catalog.main.name
+  name         = "silver"
 }
 
 # Account-level groups — linked to Entra ID via external_id
@@ -116,6 +123,35 @@ resource "databricks_grants" "developer_external_locations" {
 
 resource "databricks_service_principal" "pipeline" {
   display_name = "sp-${var.project}-pipeline"
+}
+
+# DE-Dev-Team catalog-level grant — inherits SELECT+MODIFY to all current and future tables
+resource "databricks_grant" "dev_team_catalog" {
+  catalog    = databricks_catalog.main.name
+  principal  = "DE-Dev-Team"
+  privileges = ["USE_CATALOG", "USE_SCHEMA", "CREATE_SCHEMA", "CREATE_TABLE", "SELECT", "MODIFY"]
+}
+
+# Non-authoritative grants for pipeline SP — additive, won't overwrite SQL-managed grants
+
+resource "databricks_grant" "pipeline_catalog" {
+  catalog    = databricks_catalog.main.name
+  principal  = databricks_service_principal.pipeline.application_id
+  privileges = ["USE_CATALOG", "USE_SCHEMA", "CREATE_SCHEMA"]
+}
+
+resource "databricks_grant" "pipeline_bronze" {
+  schema     = databricks_schema.bronze.id
+  principal  = databricks_service_principal.pipeline.application_id
+  privileges = ["USE_SCHEMA", "SELECT", "MODIFY", "CREATE_TABLE"]
+  depends_on = [databricks_grant.pipeline_catalog]
+}
+
+resource "databricks_grant" "pipeline_silver" {
+  schema     = databricks_schema.silver.id
+  principal  = databricks_service_principal.pipeline.application_id
+  privileges = ["USE_SCHEMA", "SELECT", "MODIFY", "CREATE_TABLE"]
+  depends_on = [databricks_grant.pipeline_catalog]
 }
 
 # Catalog grants are managed via SQL in the Bronze notebook
