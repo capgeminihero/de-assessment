@@ -7,9 +7,21 @@ terraform {
   }
 }
 
+# Workspace-level provider — used for all workspace and Unity Catalog resources
 provider "databricks" {
   host = var.workspace_url
-  # auth via Azure CLI automatically (az login)
+  # auth via Azure CLI (az login)
+}
+
+# Account-level provider — used only for account-level group management
+# Authenticates as the terraform-databricks-accounts SP (account admin)
+provider "databricks" {
+  alias         = "accounts"
+  host          = "https://accounts.azuredatabricks.net"
+  account_id    = var.databricks_account_id
+  azure_client_id     = var.databricks_client_id
+  azure_client_secret = var.databricks_client_secret
+  azure_tenant_id     = "186c3021-d0e1-4353-b0d9-d9b642e5dd44"
 }
 
 # 1. Storage Credential — links the managed identity to Unity Catalog
@@ -46,20 +58,52 @@ resource "databricks_catalog" "main" {
   depends_on = [databricks_external_location.layers]
 }
 
-# 4. Developer group — Entra ID backed (dev only)
-#
-# All three groups (DE-Dev-Team, Compliance-Team, DA-Analyst-Team) are created
-# in Microsoft Entra ID by infra/azure/main.tf. Azure Databricks Automatic
-# Identity Management continuously mirrors them into the Databricks account.
-# Only the workspace-level dev_team group is kept here for the force=true flag
-# to handle re-creation scenarios.
-
+# 4. Groups
 data "databricks_current_user" "deployer" {}
 
+# Create account-level groups via the accounts provider.
+# These are true account-level identities that Unity Catalog accepts as principals.
 resource "databricks_group" "dev_team" {
+  provider     = databricks.accounts
   count        = var.environment == "dev" ? 1 : 0
   display_name = "DE-Dev-Team"
   force        = true
+}
+
+resource "databricks_group" "compliance_team" {
+  provider     = databricks.accounts
+  display_name = "Compliance-Team"
+  force        = true
+}
+
+resource "databricks_group" "analyst_team" {
+  provider     = databricks.accounts
+  display_name = "DA-Analyst-Team"
+  force        = true
+}
+
+# Assign account-level groups to this workspace so they can be used in notebooks,
+# jobs, and Unity Catalog GRANTs.
+resource "databricks_mws_permission_assignment" "dev_team" {
+  provider     = databricks.accounts
+  count        = var.environment == "dev" ? 1 : 0
+  workspace_id = 7405605920433807
+  principal_id = databricks_group.dev_team[0].id
+  permissions  = ["USER"]
+}
+
+resource "databricks_mws_permission_assignment" "compliance_team" {
+  provider     = databricks.accounts
+  workspace_id = 7405605920433807
+  principal_id = databricks_group.compliance_team.id
+  permissions  = ["USER"]
+}
+
+resource "databricks_mws_permission_assignment" "analyst_team" {
+  provider     = databricks.accounts
+  workspace_id = 7405605920433807
+  principal_id = databricks_group.analyst_team.id
+  permissions  = ["USER"]
 }
 
 # 5. Developer Grants (dev only)
@@ -92,7 +136,7 @@ resource "databricks_service_principal" "pipeline" {
 
 resource "databricks_grants" "catalog" {
   catalog    = databricks_catalog.main.name
-  depends_on = [databricks_group.dev_team]
+  depends_on = [databricks_mws_permission_assignment.dev_team]
 
   dynamic "grant" {
     for_each = var.environment == "dev" ? [1] : []

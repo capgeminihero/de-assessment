@@ -41,4 +41,21 @@ variable "project" {
   default     = "de-assessment"
 }
 
+variable "databricks_account_id" {
+  description = "Databricks account UUID (from accounts.azuredatabricks.net)."
+  type        = string
+}
+
+variable "databricks_client_id" {
+  description = "Entra ID app (client) ID for the Terraform accounts service principal."
+  type        = string
+}
+
+variable "databricks_client_secret" {
+  description = "Client secret for the Terraform accounts service principal."
+  type        = string
+  sensitive   = true
+}
+
+
 
