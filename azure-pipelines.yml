@@ -178,7 +178,7 @@ stages:
                     export TF_VAR_databricks_client_secret=$(databricks-sp-client-secret)
                     export TF_VAR_databricks_account_id=$(DATABRICKS_ACCOUNT_ID)
 
-                    for module in infra/account infra/azure; do
+                    for module in infra/azure; do
                       echo "=== Applying $module ==="
                       terraform -chdir=$module init -input=false
                       terraform -chdir=$module apply -auto-approve -input=false \
@@ -253,7 +253,7 @@ stages:
                     export TF_VAR_databricks_client_secret=$(databricks-sp-client-secret)
                     export TF_VAR_databricks_account_id=$(DATABRICKS_ACCOUNT_ID)
 
-                    for module in infra/account infra/azure; do
+                    for module in infra/azure; do
                       echo "=== Applying $module ==="
                       terraform -chdir=$module init -input=false
                       terraform -chdir=$module apply -auto-approve -input=false \
@@ -305,7 +305,7 @@ stages:
                     export TF_VAR_databricks_client_secret=$(databricks-sp-client-secret)
                     export TF_VAR_databricks_account_id=$(DATABRICKS_ACCOUNT_ID)
 
-                    for module in infra/account infra/azure; do
+                    for module in infra/azure; do
                       echo "=== Applying $module ==="
                       terraform -chdir=$module init -input=false
                       terraform -chdir=$module apply -auto-approve -input=false \
