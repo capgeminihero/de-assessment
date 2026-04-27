@@ -78,16 +78,66 @@ stages:
     condition: succeeded()
     jobs:
       - job: run_data_quality_tests
-        displayName: 'Run pytest locally'
+        displayName: 'Run integration tests via Databricks python_task'
         continueOnError: true
         pool:
           name: Default
         steps:
           - script: |
-              cd $(Build.SourcesDirectory)
-              pip install pytest pyspark --quiet
-              python -m pytest notebooks/test_data_quality.py -v --tb=short
-            displayName: 'Run data quality tests with pytest'
+              # Upload test file to DBFS
+              databricks fs cp notebooks/test_data_quality.py \
+                dbfs:/cicd/test_data_quality.py --overwrite \
+                --profile CICD
+
+              # Submit as python_task (runs .py directly, not as notebook)
+              RUN_RESPONSE=$(curl -s -X POST \
+                "$(DATABRICKS_HOST)/api/2.1/jobs/runs/submit" \
+                -H "Authorization: Bearer $(databricks-pat)" \
+                -H "Content-Type: application/json" \
+                -d "{
+                  \"run_name\": \"ci-pytest-$(Build.BuildId)\",
+                  \"new_cluster\": {
+                    \"spark_version\": \"15.4.x-scala2.12\",
+                    \"node_type_id\": \"Standard_D4s_v3\",
+                    \"num_workers\": 1,
+                    \"data_security_mode\": \"SINGLE_USER\"
+                  },
+                  \"libraries\": [{\"pypi\": {\"package\": \"pytest\"}}],
+                  \"python_wheel_task\": null,
+                  \"spark_python_task\": {
+                    \"python_file\": \"dbfs:/cicd/test_data_quality.py\",
+                    \"parameters\": [\"--catalog\", \"$(CATALOG_BASE)_dev\"]
+                  }
+                }")
+
+              RUN_ID=$(echo $RUN_RESPONSE | python3 -c "import sys,json; d=json.load(sys.stdin); print(d.get('run_id',''))")
+              echo "Run ID: $RUN_ID"
+
+              if [ -z "$RUN_ID" ]; then
+                echo "Failed to submit run: $RUN_RESPONSE"
+                exit 1
+              fi
+
+              # Poll for result
+              while true; do
+                STATE=$(curl -s \
+                  "$(DATABRICKS_HOST)/api/2.1/jobs/runs/get?run_id=$RUN_ID" \
+                  -H "Authorization: Bearer $(databricks-pat)" \
+                  | python3 -c "import sys,json; d=json.load(sys.stdin); print(d['state']['life_cycle_state'])")
+                echo "State: $STATE"
+                if [[ "$STATE" == "TERMINATED" || "$STATE" == "SKIPPED" || "$STATE" == "INTERNAL_ERROR" ]]; then
+                  break
+                fi
+                sleep 20
+              done
+
+              RESULT=$(curl -s \
+                "$(DATABRICKS_HOST)/api/2.1/jobs/runs/get?run_id=$RUN_ID" \
+                -H "Authorization: Bearer $(databricks-pat)" \
+                | python3 -c "import sys,json; d=json.load(sys.stdin); print(d['state']['result_state'])")
+              echo "Result: $RESULT"
+              [[ "$RESULT" == "SUCCESS" ]] || exit 1
+            displayName: 'Run pytest on Databricks cluster'
 
 # ============================================================
 # STAGE 3 — Deploy Dev (develop + main branches only)
