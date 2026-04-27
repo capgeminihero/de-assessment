@@ -86,7 +86,7 @@ stages:
           - checkout: self
           - script: |
               # Upload test file to /Workspace/Shared/ so the SP can read it
-              CONTENT=$(base64 -i notebooks/test_data_quality.py | tr -d '\n')
+              CONTENT=$(base64 -i "$(Build.SourcesDirectory)/notebooks/test_data_quality.py" | tr -d '\n')
               curl -s -X POST \
                 "$(DATABRICKS_HOST)/api/2.0/workspace/import" \
                 -H "Authorization: Bearer $(databricks-pat)" \
