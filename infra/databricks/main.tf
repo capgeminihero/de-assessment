@@ -5,24 +5,28 @@ terraform {
       version = "~> 1.0"
     }
   }
+
+  # Remote state — use ARM_ACCESS_KEY or az login (Storage Blob Data Contributor required).
+  # In prod: deployer SP needs 'Storage Blob Data Contributor' on this storage account.
+  backend "azurerm" {
+    resource_group_name  = "de-assessment"
+    storage_account_name = "deassessmentd06fabcc"
+    container_name       = "tfstate"
+    key                  = "infra-databricks/terraform.tfstate"
+    use_azuread_auth     = true
+  }
 }
 
-# Workspace provider — auth via Azure CLI
+# Workspace provider — authenticates as deployer SP
+# Prerequisite: run infra/account first to register this SP as workspace ADMIN
 provider "databricks" {
-  host = var.workspace_url
-}
-
-# Accounts provider — used for account-level group management (SP auth)
-provider "databricks" {
-  alias               = "accounts"
-  host                = "https://accounts.azuredatabricks.net"
-  account_id          = var.databricks_account_id
+  host                = var.workspace_url
   azure_client_id     = var.databricks_client_id
   azure_client_secret = var.databricks_client_secret
-  azure_tenant_id     = "186c3021-d0e1-4353-b0d9-d9b642e5dd44"
+  azure_tenant_id     = var.azure_tenant_id
 }
 
-# Storage credential — links managed identity to Unity Catalog
+# ── Storage credential ─────────────────────────────────────────────────────────
 
 resource "databricks_storage_credential" "main" {
   name = "sc-${var.project}"
@@ -32,7 +36,7 @@ resource "databricks_storage_credential" "main" {
   }
 }
 
-# External locations — one per medallion layer
+# ── External locations — one per medallion layer ───────────────────────────────
 
 resource "databricks_external_location" "layers" {
   for_each        = toset(["raw", "bronze", "silver", "gold"])
@@ -41,11 +45,18 @@ resource "databricks_external_location" "layers" {
   credential_name = databricks_storage_credential.main.id
 }
 
-# Unity Catalog — environment-scoped catalog
+# ── Pipeline SP (data source — owned by infra/account) ────────────────────────
+
+data "databricks_service_principal" "pipeline" {
+  application_id = var.pipeline_sp_application_id
+}
+
+# ── Unity Catalog ──────────────────────────────────────────────────────────────
 
 resource "databricks_catalog" "main" {
   name          = "${var.catalog_name}_${var.environment}"
-  force_destroy = true
+  owner         = "platform-admins"
+  force_destroy = var.environment == "dev"
   storage_root  = "abfss://bronze@${var.storage_account_name}.dfs.core.windows.net/_catalog_managed/"
   depends_on    = [databricks_external_location.layers]
 }
@@ -53,61 +64,25 @@ resource "databricks_catalog" "main" {
 resource "databricks_schema" "bronze" {
   catalog_name = databricks_catalog.main.name
   name         = "bronze"
+  owner        = "DE-Dev-Team"
 }
 
 resource "databricks_schema" "silver" {
   catalog_name = databricks_catalog.main.name
   name         = "silver"
+  owner        = "DE-Dev-Team"
 }
 
-# Account-level groups — linked to Entra ID via external_id
+resource "databricks_schema" "gold" {
+  catalog_name = databricks_catalog.main.name
+  name         = "gold"
+  owner        = "DE-Dev-Team"
+}
+
+# ── External location grants — dev only ───────────────────────────────────────
+# data.databricks_current_user resolves to the deployer SP when running as SP
+
 data "databricks_current_user" "deployer" {}
-resource "databricks_group" "dev_team" {
-  provider     = databricks.accounts
-  count        = var.environment == "dev" ? 1 : 0
-  display_name = "DE-Dev-Team"
-  external_id  = "baa52807-c988-4c40-88c2-5cc77233c706"
-  force        = true
-}
-
-resource "databricks_group" "compliance_team" {
-  provider     = databricks.accounts
-  display_name = "Compliance-Team"
-  external_id  = "ad214b15-7987-42f7-abf8-5942e01c93cf"
-  force        = true
-}
-
-resource "databricks_group" "analyst_team" {
-  provider     = databricks.accounts
-  display_name = "DA-Analyst-Team"
-  external_id  = "71da8424-34c3-4b4e-8fbe-87004d57a729"
-  force        = true
-}
-
-# Assign groups to this workspace
-resource "databricks_mws_permission_assignment" "dev_team" {
-  provider     = databricks.accounts
-  count        = var.environment == "dev" ? 1 : 0
-  workspace_id = 7405605920433807
-  principal_id = databricks_group.dev_team[0].id
-  permissions  = ["USER"]
-}
-
-resource "databricks_mws_permission_assignment" "compliance_team" {
-  provider     = databricks.accounts
-  workspace_id = 7405605920433807
-  principal_id = databricks_group.compliance_team.id
-  permissions  = ["USER"]
-}
-
-resource "databricks_mws_permission_assignment" "analyst_team" {
-  provider     = databricks.accounts
-  workspace_id = 7405605920433807
-  principal_id = databricks_group.analyst_team.id
-  permissions  = ["USER"]
-}
-
-# External location grants — dev only
 
 resource "databricks_grants" "developer_external_locations" {
   for_each          = var.environment == "dev" ? databricks_external_location.layers : {}
@@ -119,39 +94,105 @@ resource "databricks_grants" "developer_external_locations" {
   }
 }
 
-# Pipeline service principal — used by ADF jobs
 
-resource "databricks_service_principal" "pipeline" {
-  display_name = "sp-${var.project}-pipeline"
-}
+# ── Grants ─────────────────────────────────────────────────────────────────────
 
-# DE-Dev-Team catalog-level grant — inherits SELECT+MODIFY to all current and future tables
 resource "databricks_grant" "dev_team_catalog" {
   catalog    = databricks_catalog.main.name
   principal  = "DE-Dev-Team"
   privileges = ["USE_CATALOG", "USE_SCHEMA", "CREATE_SCHEMA", "CREATE_TABLE", "SELECT", "MODIFY"]
 }
 
-# Non-authoritative grants for pipeline SP — additive, won't overwrite SQL-managed grants
-
 resource "databricks_grant" "pipeline_catalog" {
   catalog    = databricks_catalog.main.name
-  principal  = databricks_service_principal.pipeline.application_id
+  principal  = data.databricks_service_principal.pipeline.application_id
   privileges = ["USE_CATALOG", "USE_SCHEMA", "CREATE_SCHEMA"]
 }
 
 resource "databricks_grant" "pipeline_bronze" {
   schema     = databricks_schema.bronze.id
-  principal  = databricks_service_principal.pipeline.application_id
+  principal  = data.databricks_service_principal.pipeline.application_id
   privileges = ["USE_SCHEMA", "SELECT", "MODIFY", "CREATE_TABLE"]
   depends_on = [databricks_grant.pipeline_catalog]
 }
 
 resource "databricks_grant" "pipeline_silver" {
   schema     = databricks_schema.silver.id
-  principal  = databricks_service_principal.pipeline.application_id
+  principal  = data.databricks_service_principal.pipeline.application_id
   privileges = ["USE_SCHEMA", "SELECT", "MODIFY", "CREATE_TABLE"]
   depends_on = [databricks_grant.pipeline_catalog]
 }
 
-# Catalog grants are managed via SQL in the Bronze notebook
+resource "databricks_grant" "pipeline_gold" {
+  schema     = databricks_schema.gold.id
+  principal  = data.databricks_service_principal.pipeline.application_id
+  privileges = ["USE_SCHEMA", "SELECT", "MODIFY", "CREATE_TABLE"]
+  depends_on = [databricks_grant.pipeline_catalog]
+}
+
+# ── BROWSE grant — all account users can discover data ────────────────────────
+
+resource "databricks_grant" "catalog_browse" {
+  catalog    = databricks_catalog.main.name
+  principal  = "account users"
+  privileges = ["BROWSE"]
+}
+
+# ── Compliance-Team — read-only access to all layers ─────────────────────────
+
+resource "databricks_grant" "compliance_catalog" {
+  catalog    = databricks_catalog.main.name
+  principal  = "Compliance-Team"
+  privileges = ["USE_CATALOG", "USE_SCHEMA", "SELECT"]
+}
+
+# ── DA-Analyst-Team — read-only access to gold layer only ────────────────────
+
+resource "databricks_grant" "analyst_catalog" {
+  catalog    = databricks_catalog.main.name
+  principal  = "DA-Analyst-Team"
+  privileges = ["USE_CATALOG"]
+}
+
+resource "databricks_grant" "analyst_gold" {
+  schema     = databricks_schema.gold.id
+  principal  = "DA-Analyst-Team"
+  privileges = ["USE_SCHEMA", "SELECT"]
+  depends_on = [databricks_grant.analyst_catalog]
+}
+
+# ── Compute policy — enforce UC standard access mode ─────────────────────────
+# Prevents users from creating single-node or legacy clusters that bypass UC.
+
+resource "databricks_cluster_policy" "uc_standard" {
+  name = "UC Standard Access - ${var.environment}"
+  definition = jsonencode({
+    "spark_version" : {
+      "type" : "unlimited",
+      "defaultValue" : "auto:latest-lts"
+    },
+    "data_security_mode" : {
+      "type" : "fixed",
+      "value" : "USER_ISOLATION"
+    }
+  })
+}
+
+resource "databricks_permissions" "uc_standard_policy" {
+  cluster_policy_id = databricks_cluster_policy.uc_standard.id
+
+  access_control {
+    group_name       = "DE-Dev-Team"
+    permission_level = "CAN_USE"
+  }
+
+  access_control {
+    group_name       = "DA-Analyst-Team"
+    permission_level = "CAN_USE"
+  }
+
+  access_control {
+    group_name       = "Compliance-Team"
+    permission_level = "CAN_USE"
+  }
+}

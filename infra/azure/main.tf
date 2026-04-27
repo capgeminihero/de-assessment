@@ -262,6 +262,153 @@ resource "azurerm_role_assignment" "adf_kv" {
   principal_id         = azurerm_data_factory.adf.identity[0].principal_id
 }
 
+# Allow Terraform deployer to write secrets into Key Vault (required for az keyvault secret set
+# and for azurerm_key_vault_secret resources; safe on RBAC-enabled vaults)
+resource "azurerm_role_assignment" "deployer_kv_officer" {
+  scope                = azurerm_key_vault.kv.id
+  role_definition_name = "Key Vault Secrets Officer"
+  principal_id         = data.azurerm_client_config.current.object_id
+}
+
+# ── ADF: Key Vault Linked Service ──────────────────────────────────────────────
+# ADF MSI already has Key Vault Secrets User — this LS lets ADF resolve secrets at runtime.
+
+resource "azurerm_data_factory_linked_service_key_vault" "ls_kv" {
+  name            = "ls_kv_de_assessment"
+  data_factory_id = azurerm_data_factory.adf.id
+  key_vault_id    = azurerm_key_vault.kv.id
+  description     = "Key Vault linked service — used to resolve Databricks PAT and SP credentials"
+
+  depends_on = [azurerm_role_assignment.adf_kv]
+}
+
+# ── ADF: Service Principal Credential ─────────────────────────────────────────
+# Registers the Azure AD SP (03f20910-…) as a named credential inside ADF.
+# Secret is read from Key Vault at runtime — never stored in ADF or Terraform state.
+
+resource "azurerm_data_factory_credential_service_principal" "sp_cred" {
+  name                 = "cred-sp-de-assessment"
+  data_factory_id      = azurerm_data_factory.adf.id
+  description          = "Accounts SP credential for ADLS and Unity Catalog access"
+  tenant_id            = data.azurerm_client_config.current.tenant_id
+  service_principal_id = "03f20910-33ff-49ff-9a43-4aa6dc83b695"
+
+  service_principal_key {
+    linked_service_name = azurerm_data_factory_linked_service_key_vault.ls_kv.name
+    secret_name         = "databricks-sp-client-secret"
+  }
+
+  depends_on = [azurerm_data_factory_linked_service_key_vault.ls_kv]
+}
+
+# ── ADF: Databricks Linked Service ────────────────────────────────────────────
+# PAT is stored in Key Vault under secret name "databricks-pat".
+# New job cluster spun up per pipeline run — no shared cluster contention.
+
+resource "azurerm_data_factory_linked_service_azure_databricks" "ls_adb" {
+  name            = "ls_adb_de_assessment"
+  data_factory_id = azurerm_data_factory.adf.id
+  description     = "Databricks workspace — PAT auth via Key Vault; SP identity registered as cred-sp-de-assessment"
+  adb_domain      = "https://adb-7405605920433807.7.azuredatabricks.net"
+
+  key_vault_password {
+    linked_service_name = azurerm_data_factory_linked_service_key_vault.ls_kv.name
+    secret_name         = "databricks-pat"
+  }
+
+  new_cluster_config {
+    node_type             = "Standard_D4s_v3"
+    cluster_version       = "15.4.x-scala2.12"
+    min_number_of_workers = 1
+    max_number_of_workers = 2
+
+    spark_environment_variables = {
+      PYSPARK_PYTHON = "/databricks/python3/bin/python3"
+    }
+  }
+
+  depends_on = [azurerm_data_factory_linked_service_key_vault.ls_kv]
+}
+
+# ── ADF: Bronze → Silver → Gold Pipeline ──────────────────────────────────────
+# Three sequential DatabricksNotebook activities with Succeeded dependency edges.
+# Retry=1 on each activity so transient cluster start failures self-heal.
+
+resource "azurerm_data_factory_pipeline" "tvmaze" {
+  name            = "pl_tvmaze_bronze_silver_gold"
+  data_factory_id = azurerm_data_factory.adf.id
+  description     = "Orchestrates Bronze ingestion → Silver transformation → Gold aggregation for TVMaze data"
+
+  activities_json = jsonencode([
+    {
+      name        = "act_bronze_ingestion"
+      description = "Fetch TVMaze API → ADLS raw → bronze Delta tables"
+      type        = "DatabricksNotebook"
+      policy = {
+        timeout                = "0.06:00:00"
+        retry                  = 1
+        retryIntervalInSeconds = 60
+      }
+      linkedServiceName = {
+        referenceName = azurerm_data_factory_linked_service_azure_databricks.ls_adb.name
+        type          = "LinkedServiceReference"
+      }
+      typeProperties = {
+        notebookPath = "${var.notebook_base_path}/01_bronze_ingestion"
+      }
+      dependsOn = []
+    },
+    {
+      name        = "act_silver_transformation"
+      description = "Flatten bronze JSON → silver Delta tables + fact_show_data"
+      type        = "DatabricksNotebook"
+      policy = {
+        timeout                = "0.06:00:00"
+        retry                  = 1
+        retryIntervalInSeconds = 60
+      }
+      linkedServiceName = {
+        referenceName = azurerm_data_factory_linked_service_azure_databricks.ls_adb.name
+        type          = "LinkedServiceReference"
+      }
+      typeProperties = {
+        notebookPath = "${var.notebook_base_path}/02_silver_transformation"
+      }
+      dependsOn = [
+        {
+          activity             = "act_bronze_ingestion"
+          dependencyConditions = ["Succeeded"]
+        }
+      ]
+    },
+    {
+      name        = "act_gold_aggregation"
+      description = "Aggregate silver → gold Delta tables for analytics"
+      type        = "DatabricksNotebook"
+      policy = {
+        timeout                = "0.06:00:00"
+        retry                  = 1
+        retryIntervalInSeconds = 60
+      }
+      linkedServiceName = {
+        referenceName = azurerm_data_factory_linked_service_azure_databricks.ls_adb.name
+        type          = "LinkedServiceReference"
+      }
+      typeProperties = {
+        notebookPath = "${var.notebook_base_path}/03_gold_aggregation"
+      }
+      dependsOn = [
+        {
+          activity             = "act_silver_transformation"
+          dependencyConditions = ["Succeeded"]
+        }
+      ]
+    }
+  ])
+
+  depends_on = [azurerm_data_factory_linked_service_azure_databricks.ls_adb]
+}
+
 # Audit logging — Log Analytics sink for Databricks, Key Vault, Storage (90 day retention)
 
 resource "azurerm_log_analytics_workspace" "audit" {

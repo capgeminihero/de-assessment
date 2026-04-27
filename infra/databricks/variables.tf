@@ -41,9 +41,10 @@ variable "project" {
   default     = "de-assessment"
 }
 
-variable "databricks_account_id" {
-  description = "Databricks account UUID (from accounts.azuredatabricks.net)."
+variable "pipeline_sp_application_id" {
+  description = "Application ID of the Databricks-native pipeline SP (managed by infra/account)."
   type        = string
+  default     = "b958d6bb-544e-4ce6-88ee-7567e64380db"
 }
 
 variable "databricks_client_id" {
@@ -55,6 +56,12 @@ variable "databricks_client_secret" {
   description = "Client secret for the Terraform accounts service principal."
   type        = string
   sensitive   = true
+}
+
+variable "azure_tenant_id" {
+  description = "Azure AD tenant ID."
+  type        = string
+  default     = "186c3021-d0e1-4353-b0d9-d9b642e5dd44"
 }
 
 

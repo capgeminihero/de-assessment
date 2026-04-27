@@ -19,3 +19,9 @@ variable "location" {
   type        = string
   default     = "westeurope"
 }
+
+variable "notebook_base_path" {
+  description = "Base path in the Databricks workspace where notebooks 01/02/03 are stored (no trailing slash)."
+  type        = string
+  default     = "/Shared"
+}
