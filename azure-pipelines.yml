@@ -170,29 +170,15 @@ stages:
                 - checkout: self
 
                 - script: |
+                    set -e
                     export ARM_CLIENT_ID=$(databricks-sp-client-id)
                     export ARM_CLIENT_SECRET=$(databricks-sp-client-secret)
                     export ARM_TENANT_ID=$(ARM_TENANT_ID)
                     export ARM_SUBSCRIPTION_ID=$(ARM_SUBSCRIPTION_ID)
-                    export TF_VAR_databricks_client_id=$(databricks-sp-client-id)
-                    export TF_VAR_databricks_client_secret=$(databricks-sp-client-secret)
-                    export TF_VAR_databricks_account_id=$(DATABRICKS_ACCOUNT_ID)
 
-                    for module in infra/azure; do
-                      echo "=== Applying $module ==="
-                      terraform -chdir=$module init -input=false
-                      terraform -chdir=$module apply -auto-approve -input=false \
-                        -var="environment=$(ENVIRONMENT)"
-                    done
-
-                    export TF_VAR_workspace_url=$(terraform -chdir=infra/azure output -raw workspace_url)
-                    export TF_VAR_storage_account_name=$(terraform -chdir=infra/azure output -raw storage_account_name)
-                    export TF_VAR_access_connector_id=$(terraform -chdir=infra/azure output -raw access_connector_id)
-                    export TF_VAR_managed_identity_id=$(terraform -chdir=infra/azure output -raw managed_identity_id)
-
-                    echo "=== Applying infra/databricks ==="
-                    terraform -chdir=infra/databricks init -input=false
-                    terraform -chdir=infra/databricks apply -auto-approve -input=false \
+                    echo "=== Applying infra/azure ==="
+                    terraform -chdir=infra/azure init -input=false
+                    terraform -chdir=infra/azure apply -auto-approve -input=false \
                       -var="environment=$(ENVIRONMENT)"
                   displayName: "Terraform apply all modules"
 
@@ -245,29 +231,15 @@ stages:
                 - checkout: self
 
                 - script: |
+                    set -e
                     export ARM_CLIENT_ID=$(databricks-sp-client-id)
                     export ARM_CLIENT_SECRET=$(databricks-sp-client-secret)
                     export ARM_TENANT_ID=$(ARM_TENANT_ID)
                     export ARM_SUBSCRIPTION_ID=$(ARM_SUBSCRIPTION_ID)
-                    export TF_VAR_databricks_client_id=$(databricks-sp-client-id)
-                    export TF_VAR_databricks_client_secret=$(databricks-sp-client-secret)
-                    export TF_VAR_databricks_account_id=$(DATABRICKS_ACCOUNT_ID)
 
-                    for module in infra/azure; do
-                      echo "=== Applying $module ==="
-                      terraform -chdir=$module init -input=false
-                      terraform -chdir=$module apply -auto-approve -input=false \
-                        -var="environment=$(ENVIRONMENT)"
-                    done
-
-                    export TF_VAR_workspace_url=$(terraform -chdir=infra/azure output -raw workspace_url)
-                    export TF_VAR_storage_account_name=$(terraform -chdir=infra/azure output -raw storage_account_name)
-                    export TF_VAR_access_connector_id=$(terraform -chdir=infra/azure output -raw access_connector_id)
-                    export TF_VAR_managed_identity_id=$(terraform -chdir=infra/azure output -raw managed_identity_id)
-
-                    echo "=== Applying infra/databricks ==="
-                    terraform -chdir=infra/databricks init -input=false
-                    terraform -chdir=infra/databricks apply -auto-approve -input=false \
+                    echo "=== Applying infra/azure ==="
+                    terraform -chdir=infra/azure init -input=false
+                    terraform -chdir=infra/azure apply -auto-approve -input=false \
                       -var="environment=$(ENVIRONMENT)"
                   displayName: "Terraform apply all modules"
 
@@ -297,28 +269,14 @@ stages:
                 - checkout: self
 
                 - script: |
+                    set -e
                     export ARM_CLIENT_ID=$(databricks-sp-client-id)
                     export ARM_CLIENT_SECRET=$(databricks-sp-client-secret)
                     export ARM_TENANT_ID=$(ARM_TENANT_ID)
                     export ARM_SUBSCRIPTION_ID=$(ARM_SUBSCRIPTION_ID)
-                    export TF_VAR_databricks_client_id=$(databricks-sp-client-id)
-                    export TF_VAR_databricks_client_secret=$(databricks-sp-client-secret)
-                    export TF_VAR_databricks_account_id=$(DATABRICKS_ACCOUNT_ID)
 
-                    for module in infra/azure; do
-                      echo "=== Applying $module ==="
-                      terraform -chdir=$module init -input=false
-                      terraform -chdir=$module apply -auto-approve -input=false \
-                        -var="environment=$(ENVIRONMENT)"
-                    done
-
-                    export TF_VAR_workspace_url=$(terraform -chdir=infra/azure output -raw workspace_url)
-                    export TF_VAR_storage_account_name=$(terraform -chdir=infra/azure output -raw storage_account_name)
-                    export TF_VAR_access_connector_id=$(terraform -chdir=infra/azure output -raw access_connector_id)
-                    export TF_VAR_managed_identity_id=$(terraform -chdir=infra/azure output -raw managed_identity_id)
-
-                    echo "=== Applying infra/databricks ==="
-                    terraform -chdir=infra/databricks init -input=false
-                    terraform -chdir=infra/databricks apply -auto-approve -input=false \
+                    echo "=== Applying infra/azure ==="
+                    terraform -chdir=infra/azure init -input=false
+                    terraform -chdir=infra/azure apply -auto-approve -input=false \
                       -var="environment=$(ENVIRONMENT)"
                   displayName: "Terraform apply all modules"
