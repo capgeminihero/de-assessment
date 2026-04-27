@@ -1,0 +1,82 @@
+{
+    "name": "pl_tvmaze_bronze_silver_gold",
+    "properties": {
+        "description": "Orchestrates Bronze ingestion → Silver transformation → Gold aggregation for TVMaze data",
+        "activities": [
+            {
+                "name": "act_bronze_ingestion",
+                "description": "Fetch TVMaze API → ADLS raw → bronze Delta tables",
+                "type": "DatabricksNotebook",
+                "dependsOn": [],
+                "policy": {
+                    "timeout": "0.06:00:00",
+                    "retry": 1,
+                    "retryIntervalInSeconds": 60
+                },
+                "userProperties": [],
+                "typeProperties": {
+                    "notebookPath": "/Users/sef.f@outlook.com/de-assessment/notebooks/01_bronze_ingestion"
+                },
+                "linkedServiceName": {
+                    "referenceName": "ls_adb_de_assessment",
+                    "type": "LinkedServiceReference"
+                }
+            },
+            {
+                "name": "act_silver_transformation",
+                "description": "Flatten bronze JSON → silver Delta tables + fact_show_data",
+                "type": "DatabricksNotebook",
+                "dependsOn": [
+                    {
+                        "activity": "act_bronze_ingestion",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "policy": {
+                    "timeout": "0.06:00:00",
+                    "retry": 1,
+                    "retryIntervalInSeconds": 60
+                },
+                "userProperties": [],
+                "typeProperties": {
+                    "notebookPath": "/Users/sef.f@outlook.com/de-assessment/notebooks/02_silver_transformation"
+                },
+                "linkedServiceName": {
+                    "referenceName": "ls_adb_de_assessment",
+                    "type": "LinkedServiceReference"
+                }
+            },
+            {
+                "name": "act_gold_aggregation",
+                "description": "Aggregate silver → gold Delta tables for analytics",
+                "type": "DatabricksNotebook",
+                "dependsOn": [
+                    {
+                        "activity": "act_silver_transformation",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "policy": {
+                    "timeout": "0.06:00:00",
+                    "retry": 1,
+                    "retryIntervalInSeconds": 60
+                },
+                "userProperties": [],
+                "typeProperties": {
+                    "notebookPath": "/Users/sef.f@outlook.com/de-assessment/notebooks/03_gold_aggregation"
+                },
+                "linkedServiceName": {
+                    "referenceName": "ls_adb_de_assessment",
+                    "type": "LinkedServiceReference"
+                }
+            }
+        ],
+        "annotations": [],
+        "lastPublishTime": "2026-04-26T16:23:55Z"
+    },
+    "type": "Microsoft.DataFactory/factories/pipelines"
+}

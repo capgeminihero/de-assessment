@@ -92,6 +92,16 @@ resource "databricks_grants" "developer_external_locations" {
     principal  = data.databricks_current_user.deployer.user_name
     privileges = ["READ_FILES", "WRITE_FILES", "CREATE_EXTERNAL_TABLE", "CREATE_MANAGED_STORAGE"]
   }
+
+  grant {
+    principal  = "DE-Dev-Team"
+    privileges = ["READ_FILES", "WRITE_FILES", "CREATE_EXTERNAL_TABLE"]
+  }
+
+  grant {
+    principal  = data.databricks_service_principal.pipeline.application_id
+    privileges = ["READ_FILES", "WRITE_FILES", "CREATE_EXTERNAL_TABLE"]
+  }
 }
 
 
@@ -100,7 +110,7 @@ resource "databricks_grants" "developer_external_locations" {
 resource "databricks_grant" "dev_team_catalog" {
   catalog    = databricks_catalog.main.name
   principal  = "DE-Dev-Team"
-  privileges = ["USE_CATALOG", "USE_SCHEMA", "CREATE_SCHEMA", "CREATE_TABLE", "SELECT", "MODIFY"]
+  privileges = ["USE_CATALOG", "USE_SCHEMA", "CREATE_SCHEMA", "CREATE_TABLE", "SELECT", "MODIFY", "MANAGE"]
 }
 
 resource "databricks_grant" "pipeline_catalog" {

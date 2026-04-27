@@ -1,0 +1,710 @@
+{
+  "version": 4,
+  "terraform_version": "1.10.2",
+  "serial": 142,
+  "lineage": "31824035-0b96-067c-4f92-c4550ddd386c",
+  "outputs": {},
+  "resources": [
+    {
+      "mode": "data",
+      "type": "databricks_current_user",
+      "name": "deployer",
+      "provider": "provider[\"registry.terraform.io/databricks/databricks\"]",
+      "instances": [
+        {
+          "schema_version": 0,
+          "attributes": {
+            "acl_principal_id": "users/sef.f@outlook.com",
+            "alphanumeric": "sef_f",
+            "external_id": "9c30edd5-e73a-44fc-8b02-ed78e182f0cd",
+            "home": "/Users/sef.f@outlook.com",
+            "id": "149421918493260",
+            "provider_config": null,
+            "repos": "/Repos/sef.f@outlook.com",
+            "user_name": "sef.f@outlook.com",
+            "workspace_url": "https://adb-7405605920433807.7.azuredatabricks.net"
+          },
+          "sensitive_attributes": []
+        }
+      ]
+    },
+    {
+      "mode": "data",
+      "type": "databricks_group",
+      "name": "admins",
+      "provider": "provider[\"registry.terraform.io/databricks/databricks\"]",
+      "instances": [
+        {
+          "schema_version": 0,
+          "attributes": {
+            "acl_principal_id": "groups/admins",
+            "allow_cluster_create": true,
+            "allow_instance_pool_create": true,
+            "api": null,
+            "child_groups": [],
+            "databricks_sql_access": true,
+            "display_name": "admins",
+            "external_id": null,
+            "groups": [],
+            "id": "154213565490598",
+            "instance_profiles": [],
+            "members": [
+              "143491871362576",
+              "149421918493260"
+            ],
+            "provider_config": null,
+            "recursive": true,
+            "service_principals": [
+              "143491871362576"
+            ],
+            "users": [
+              "149421918493260"
+            ],
+            "workspace_access": true,
+            "workspace_consume": false
+          },
+          "sensitive_attributes": []
+        }
+      ]
+    },
+    {
+      "mode": "managed",
+      "type": "databricks_catalog",
+      "name": "main",
+      "provider": "provider[\"registry.terraform.io/databricks/databricks\"]",
+      "instances": [
+        {
+          "schema_version": 0,
+          "attributes": {
+            "browse_only": false,
+            "catalog_type": "MANAGED_CATALOG",
+            "comment": null,
+            "connection_name": null,
+            "created_at": 1777145887865,
+            "created_by": "sef.f@outlook.com",
+            "effective_predictive_optimization_flag": [
+              {
+                "inherited_from_name": "metastore_azure_westeurope",
+                "inherited_from_type": "METASTORE",
+                "value": "ENABLE"
+              }
+            ],
+            "enable_predictive_optimization": "INHERIT",
+            "force_destroy": true,
+            "full_name": "de_assessment_dev",
+            "id": "de_assessment_dev",
+            "isolation_mode": "OPEN",
+            "managed_encryption_settings": [],
+            "metastore_id": "1a0e89fa-74b9-4de4-b894-92c32218a805",
+            "name": "de_assessment_dev",
+            "options": null,
+            "owner": "b958d6bb-544e-4ce6-88ee-7567e64380db",
+            "properties": null,
+            "provider_config": [],
+            "provider_name": null,
+            "provisioning_info": [],
+            "securable_type": "CATALOG",
+            "share_name": null,
+            "storage_location": "abfss://bronze@deassessmentd06fabcc.dfs.core.windows.net/_catalog_managed/__unitystorage/catalogs/9e0652ac-3310-4fdd-8083-ef74b1d4d7ca",
+            "storage_root": "abfss://bronze@deassessmentd06fabcc.dfs.core.windows.net/_catalog_managed",
+            "updated_at": 1777282419325,
+            "updated_by": "sef.f@outlook.com"
+          },
+          "sensitive_attributes": [],
+          "private": "bnVsbA==",
+          "dependencies": [
+            "data.databricks_group.admins",
+            "databricks_external_location.layers",
+            "databricks_group_member.pipeline_sp_admin",
+            "databricks_service_principal.pipeline",
+            "databricks_storage_credential.main"
+          ]
+        }
+      ]
+    },
+    {
+      "mode": "managed",
+      "type": "databricks_external_location",
+      "name": "layers",
+      "provider": "provider[\"registry.terraform.io/databricks/databricks\"]",
+      "instances": [
+        {
+          "index_key": "bronze",
+          "schema_version": 0,
+          "attributes": {
+            "browse_only": false,
+            "comment": null,
+            "created_at": 1777119565035,
+            "created_by": "sef.f@outlook.com",
+            "credential_id": "35c3c092-ad1a-4e81-8f85-e8bed566fe79",
+            "credential_name": "sc-de-assessment",
+            "effective_enable_file_events": false,
+            "effective_file_event_queue": [],
+            "enable_file_events": false,
+            "encryption_details": [],
+            "fallback": false,
+            "file_event_queue": [],
+            "force_destroy": null,
+            "force_update": null,
+            "id": "bronze",
+            "isolation_mode": "ISOLATION_MODE_OPEN",
+            "metastore_id": "1a0e89fa-74b9-4de4-b894-92c32218a805",
+            "name": "bronze",
+            "owner": "sef.f@outlook.com",
+            "provider_config": [],
+            "read_only": false,
+            "skip_validation": null,
+            "updated_at": 1777119565035,
+            "updated_by": "sef.f@outlook.com",
+            "url": "abfss://bronze@deassessmentd06fabcc.dfs.core.windows.net/"
+          },
+          "sensitive_attributes": [],
+          "private": "bnVsbA==",
+          "dependencies": [
+            "databricks_storage_credential.main"
+          ]
+        },
+        {
+          "index_key": "gold",
+          "schema_version": 0,
+          "attributes": {
+            "browse_only": false,
+            "comment": null,
+            "created_at": 1777119565288,
+            "created_by": "sef.f@outlook.com",
+            "credential_id": "35c3c092-ad1a-4e81-8f85-e8bed566fe79",
+            "credential_name": "sc-de-assessment",
+            "effective_enable_file_events": false,
+            "effective_file_event_queue": [],
+            "enable_file_events": false,
+            "encryption_details": [],
+            "fallback": false,
+            "file_event_queue": [],
+            "force_destroy": null,
+            "force_update": null,
+            "id": "gold",
+            "isolation_mode": "ISOLATION_MODE_OPEN",
+            "metastore_id": "1a0e89fa-74b9-4de4-b894-92c32218a805",
+            "name": "gold",
+            "owner": "sef.f@outlook.com",
+            "provider_config": [],
+            "read_only": false,
+            "skip_validation": null,
+            "updated_at": 1777119565288,
+            "updated_by": "sef.f@outlook.com",
+            "url": "abfss://gold@deassessmentd06fabcc.dfs.core.windows.net/"
+          },
+          "sensitive_attributes": [],
+          "private": "bnVsbA==",
+          "dependencies": [
+            "databricks_storage_credential.main"
+          ]
+        },
+        {
+          "index_key": "raw",
+          "schema_version": 0,
+          "attributes": {
+            "browse_only": false,
+            "comment": null,
+            "created_at": 1777119565129,
+            "created_by": "sef.f@outlook.com",
+            "credential_id": "35c3c092-ad1a-4e81-8f85-e8bed566fe79",
+            "credential_name": "sc-de-assessment",
+            "effective_enable_file_events": false,
+            "effective_file_event_queue": [],
+            "enable_file_events": false,
+            "encryption_details": [],
+            "fallback": false,
+            "file_event_queue": [],
+            "force_destroy": null,
+            "force_update": null,
+            "id": "raw",
+            "isolation_mode": "ISOLATION_MODE_OPEN",
+            "metastore_id": "1a0e89fa-74b9-4de4-b894-92c32218a805",
+            "name": "raw",
+            "owner": "sef.f@outlook.com",
+            "provider_config": [],
+            "read_only": false,
+            "skip_validation": null,
+            "updated_at": 1777119565129,
+            "updated_by": "sef.f@outlook.com",
+            "url": "abfss://raw@deassessmentd06fabcc.dfs.core.windows.net/"
+          },
+          "sensitive_attributes": [],
+          "private": "bnVsbA==",
+          "dependencies": [
+            "databricks_storage_credential.main"
+          ]
+        },
+        {
+          "index_key": "silver",
+          "schema_version": 0,
+          "attributes": {
+            "browse_only": false,
+            "comment": null,
+            "created_at": 1777119565216,
+            "created_by": "sef.f@outlook.com",
+            "credential_id": "35c3c092-ad1a-4e81-8f85-e8bed566fe79",
+            "credential_name": "sc-de-assessment",
+            "effective_enable_file_events": false,
+            "effective_file_event_queue": [],
+            "enable_file_events": false,
+            "encryption_details": [],
+            "fallback": false,
+            "file_event_queue": [],
+            "force_destroy": null,
+            "force_update": null,
+            "id": "silver",
+            "isolation_mode": "ISOLATION_MODE_OPEN",
+            "metastore_id": "1a0e89fa-74b9-4de4-b894-92c32218a805",
+            "name": "silver",
+            "owner": "sef.f@outlook.com",
+            "provider_config": [],
+            "read_only": false,
+            "skip_validation": null,
+            "updated_at": 1777119565216,
+            "updated_by": "sef.f@outlook.com",
+            "url": "abfss://silver@deassessmentd06fabcc.dfs.core.windows.net/"
+          },
+          "sensitive_attributes": [],
+          "private": "bnVsbA==",
+          "dependencies": [
+            "databricks_storage_credential.main"
+          ]
+        }
+      ]
+    },
+    {
+      "mode": "managed",
+      "type": "databricks_grant",
+      "name": "dev_team_catalog",
+      "provider": "provider[\"registry.terraform.io/databricks/databricks\"]",
+      "instances": [
+        {
+          "schema_version": 0,
+          "attributes": {
+            "catalog": "de_assessment_dev",
+            "credential": null,
+            "external_location": null,
+            "foreign_connection": null,
+            "function": null,
+            "id": "catalog/de_assessment_dev/DE-Dev-Team",
+            "metastore": null,
+            "model": null,
+            "pipeline": null,
+            "principal": "DE-Dev-Team",
+            "privileges": [
+              "CREATE_SCHEMA",
+              "CREATE_TABLE",
+              "MODIFY",
+              "SELECT",
+              "USE_CATALOG",
+              "USE_SCHEMA"
+            ],
+            "provider_config": [],
+            "recipient": null,
+            "schema": null,
+            "share": null,
+            "storage_credential": null,
+            "table": null,
+            "volume": null
+          },
+          "sensitive_attributes": [],
+          "private": "bnVsbA==",
+          "dependencies": [
+            "data.databricks_group.admins",
+            "databricks_catalog.main",
+            "databricks_external_location.layers",
+            "databricks_group_member.pipeline_sp_admin",
+            "databricks_service_principal.pipeline",
+            "databricks_storage_credential.main"
+          ]
+        }
+      ]
+    },
+    {
+      "mode": "managed",
+      "type": "databricks_grants",
+      "name": "developer_external_locations",
+      "provider": "provider[\"registry.terraform.io/databricks/databricks\"]",
+      "instances": [
+        {
+          "index_key": "bronze",
+          "schema_version": 0,
+          "attributes": {
+            "catalog": null,
+            "credential": null,
+            "external_location": "bronze",
+            "foreign_connection": null,
+            "function": null,
+            "grant": [
+              {
+                "principal": "sef.f@outlook.com",
+                "privileges": [
+                  "CREATE_EXTERNAL_TABLE",
+                  "CREATE_MANAGED_STORAGE",
+                  "READ_FILES",
+                  "WRITE_FILES"
+                ]
+              }
+            ],
+            "id": "external_location/bronze",
+            "metastore": null,
+            "model": null,
+            "pipeline": null,
+            "provider_config": [],
+            "recipient": null,
+            "schema": null,
+            "share": null,
+            "storage_credential": null,
+            "table": null,
+            "volume": null
+          },
+          "sensitive_attributes": [],
+          "private": "bnVsbA==",
+          "dependencies": [
+            "data.databricks_current_user.deployer",
+            "databricks_external_location.layers",
+            "databricks_storage_credential.main"
+          ]
+        },
+        {
+          "index_key": "gold",
+          "schema_version": 0,
+          "attributes": {
+            "catalog": null,
+            "credential": null,
+            "external_location": "gold",
+            "foreign_connection": null,
+            "function": null,
+            "grant": [
+              {
+                "principal": "sef.f@outlook.com",
+                "privileges": [
+                  "CREATE_EXTERNAL_TABLE",
+                  "CREATE_MANAGED_STORAGE",
+                  "READ_FILES",
+                  "WRITE_FILES"
+                ]
+              }
+            ],
+            "id": "external_location/gold",
+            "metastore": null,
+            "model": null,
+            "pipeline": null,
+            "provider_config": [],
+            "recipient": null,
+            "schema": null,
+            "share": null,
+            "storage_credential": null,
+            "table": null,
+            "volume": null
+          },
+          "sensitive_attributes": [],
+          "private": "bnVsbA==",
+          "dependencies": [
+            "data.databricks_current_user.deployer",
+            "databricks_external_location.layers",
+            "databricks_storage_credential.main"
+          ]
+        },
+        {
+          "index_key": "raw",
+          "schema_version": 0,
+          "attributes": {
+            "catalog": null,
+            "credential": null,
+            "external_location": "raw",
+            "foreign_connection": null,
+            "function": null,
+            "grant": [
+              {
+                "principal": "sef.f@outlook.com",
+                "privileges": [
+                  "CREATE_EXTERNAL_TABLE",
+                  "CREATE_MANAGED_STORAGE",
+                  "READ_FILES",
+                  "WRITE_FILES"
+                ]
+              }
+            ],
+            "id": "external_location/raw",
+            "metastore": null,
+            "model": null,
+            "pipeline": null,
+            "provider_config": [],
+            "recipient": null,
+            "schema": null,
+            "share": null,
+            "storage_credential": null,
+            "table": null,
+            "volume": null
+          },
+          "sensitive_attributes": [],
+          "private": "bnVsbA==",
+          "dependencies": [
+            "data.databricks_current_user.deployer",
+            "databricks_external_location.layers",
+            "databricks_storage_credential.main"
+          ]
+        },
+        {
+          "index_key": "silver",
+          "schema_version": 0,
+          "attributes": {
+            "catalog": null,
+            "credential": null,
+            "external_location": "silver",
+            "foreign_connection": null,
+            "function": null,
+            "grant": [
+              {
+                "principal": "sef.f@outlook.com",
+                "privileges": [
+                  "CREATE_EXTERNAL_TABLE",
+                  "CREATE_MANAGED_STORAGE",
+                  "READ_FILES",
+                  "WRITE_FILES"
+                ]
+              }
+            ],
+            "id": "external_location/silver",
+            "metastore": null,
+            "model": null,
+            "pipeline": null,
+            "provider_config": [],
+            "recipient": null,
+            "schema": null,
+            "share": null,
+            "storage_credential": null,
+            "table": null,
+            "volume": null
+          },
+          "sensitive_attributes": [],
+          "private": "bnVsbA==",
+          "dependencies": [
+            "data.databricks_current_user.deployer",
+            "databricks_external_location.layers",
+            "databricks_storage_credential.main"
+          ]
+        }
+      ]
+    },
+    {
+      "mode": "managed",
+      "type": "databricks_group_member",
+      "name": "pipeline_sp_admin",
+      "provider": "provider[\"registry.terraform.io/databricks/databricks\"]",
+      "instances": [
+        {
+          "schema_version": 0,
+          "attributes": {
+            "api": null,
+            "group_id": "154213565490598",
+            "id": "154213565490598|143491871362576",
+            "member_id": "143491871362576",
+            "provider_config": []
+          },
+          "sensitive_attributes": [],
+          "private": "bnVsbA==",
+          "dependencies": [
+            "data.databricks_group.admins",
+            "databricks_service_principal.pipeline"
+          ]
+        }
+      ]
+    },
+    {
+      "mode": "managed",
+      "type": "databricks_schema",
+      "name": "bronze",
+      "provider": "provider[\"registry.terraform.io/databricks/databricks\"]",
+      "instances": [
+        {
+          "schema_version": 0,
+          "attributes": {
+            "catalog_name": "de_assessment_dev",
+            "comment": null,
+            "enable_predictive_optimization": "INHERIT",
+            "force_destroy": false,
+            "id": "de_assessment_dev.bronze",
+            "metastore_id": "1a0e89fa-74b9-4de4-b894-92c32218a805",
+            "name": "bronze",
+            "owner": "b958d6bb-544e-4ce6-88ee-7567e64380db",
+            "properties": {},
+            "provider_config": [],
+            "schema_id": "7e3879de-c6d4-42bd-bdeb-d8937544b4e5",
+            "storage_root": null
+          },
+          "sensitive_attributes": [],
+          "private": "bnVsbA==",
+          "dependencies": [
+            "data.databricks_group.admins",
+            "databricks_catalog.main",
+            "databricks_external_location.layers",
+            "databricks_group_member.pipeline_sp_admin",
+            "databricks_service_principal.pipeline",
+            "databricks_storage_credential.main"
+          ]
+        }
+      ]
+    },
+    {
+      "mode": "managed",
+      "type": "databricks_schema",
+      "name": "gold",
+      "provider": "provider[\"registry.terraform.io/databricks/databricks\"]",
+      "instances": [
+        {
+          "schema_version": 0,
+          "attributes": {
+            "catalog_name": "de_assessment_dev",
+            "comment": null,
+            "enable_predictive_optimization": "INHERIT",
+            "force_destroy": false,
+            "id": "de_assessment_dev.gold",
+            "metastore_id": "1a0e89fa-74b9-4de4-b894-92c32218a805",
+            "name": "gold",
+            "owner": "b958d6bb-544e-4ce6-88ee-7567e64380db",
+            "properties": {},
+            "provider_config": [],
+            "schema_id": "1ccd2de0-929c-49da-b1a2-cc65a701a0aa",
+            "storage_root": null
+          },
+          "sensitive_attributes": [],
+          "private": "bnVsbA==",
+          "dependencies": [
+            "data.databricks_group.admins",
+            "databricks_catalog.main",
+            "databricks_external_location.layers",
+            "databricks_group_member.pipeline_sp_admin",
+            "databricks_service_principal.pipeline",
+            "databricks_storage_credential.main"
+          ]
+        }
+      ]
+    },
+    {
+      "mode": "managed",
+      "type": "databricks_schema",
+      "name": "silver",
+      "provider": "provider[\"registry.terraform.io/databricks/databricks\"]",
+      "instances": [
+        {
+          "schema_version": 0,
+          "attributes": {
+            "catalog_name": "de_assessment_dev",
+            "comment": null,
+            "enable_predictive_optimization": "INHERIT",
+            "force_destroy": false,
+            "id": "de_assessment_dev.silver",
+            "metastore_id": "1a0e89fa-74b9-4de4-b894-92c32218a805",
+            "name": "silver",
+            "owner": "b958d6bb-544e-4ce6-88ee-7567e64380db",
+            "properties": {},
+            "provider_config": [],
+            "schema_id": "b92d58da-a35d-4fca-af81-aaa7d1cbe359",
+            "storage_root": null
+          },
+          "sensitive_attributes": [],
+          "private": "bnVsbA==",
+          "dependencies": [
+            "data.databricks_group.admins",
+            "databricks_catalog.main",
+            "databricks_external_location.layers",
+            "databricks_group_member.pipeline_sp_admin",
+            "databricks_service_principal.pipeline",
+            "databricks_storage_credential.main"
+          ]
+        }
+      ]
+    },
+    {
+      "mode": "managed",
+      "type": "databricks_service_principal",
+      "name": "pipeline",
+      "provider": "provider[\"registry.terraform.io/databricks/databricks\"]",
+      "instances": [
+        {
+          "schema_version": 0,
+          "attributes": {
+            "acl_principal_id": "servicePrincipals/b958d6bb-544e-4ce6-88ee-7567e64380db",
+            "active": true,
+            "allow_cluster_create": false,
+            "allow_instance_pool_create": false,
+            "api": null,
+            "application_id": "b958d6bb-544e-4ce6-88ee-7567e64380db",
+            "databricks_sql_access": false,
+            "disable_as_user_deletion": null,
+            "display_name": "sp-de-assessment-pipeline",
+            "external_id": "",
+            "force": null,
+            "force_delete_home_dir": null,
+            "force_delete_repos": null,
+            "home": "/Users/b958d6bb-544e-4ce6-88ee-7567e64380db",
+            "id": "143491871362576",
+            "provider_config": [],
+            "repos": "/Repos/b958d6bb-544e-4ce6-88ee-7567e64380db",
+            "workspace_access": false,
+            "workspace_consume": false
+          },
+          "sensitive_attributes": [],
+          "private": "bnVsbA=="
+        }
+      ]
+    },
+    {
+      "mode": "managed",
+      "type": "databricks_storage_credential",
+      "name": "main",
+      "provider": "provider[\"registry.terraform.io/databricks/databricks\"]",
+      "instances": [
+        {
+          "schema_version": 0,
+          "attributes": {
+            "api": null,
+            "aws_iam_role": [],
+            "azure_managed_identity": [
+              {
+                "access_connector_id": "/subscriptions/a64fd3aa-b704-4942-b259-96843424d4d1/resourceGroups/de-assessment/providers/Microsoft.Databricks/accessConnectors/ac-de-assessment",
+                "credential_id": "cd639036-2169-4de7-b355-0d2148cd7921",
+                "managed_identity_id": "/subscriptions/a64fd3aa-b704-4942-b259-96843424d4d1/resourceGroups/de-assessment/providers/Microsoft.ManagedIdentity/userAssignedIdentities/uai-de-assessment"
+              }
+            ],
+            "azure_service_principal": [],
+            "cloudflare_api_token": [],
+            "comment": null,
+            "databricks_gcp_service_account": [],
+            "force_destroy": null,
+            "force_update": null,
+            "gcp_service_account_key": [],
+            "id": "sc-de-assessment",
+            "isolation_mode": "ISOLATION_MODE_OPEN",
+            "metastore_id": "1a0e89fa-74b9-4de4-b894-92c32218a805",
+            "name": "sc-de-assessment",
+            "owner": "sef.f@outlook.com",
+            "provider_config": [],
+            "read_only": false,
+            "skip_validation": null,
+            "storage_credential_id": "35c3c092-ad1a-4e81-8f85-e8bed566fe79"
+          },
+          "sensitive_attributes": [],
+          "private": "bnVsbA=="
+        }
+      ]
+    }
+  ],
+  "check_results": [
+    {
+      "object_kind": "var",
+      "config_addr": "var.environment",
+      "status": "pass",
+      "objects": [
+        {
+          "object_addr": "var.environment",
+          "status": "pass"
+        }
+      ]
+    }
+  ]
+}
