@@ -1,0 +1,295 @@
+# ============================================================
+# Azure DevOps CI/CD Pipeline — ABN AMRO DE Assessment
+# ============================================================
+#
+# Branching strategy:
+#   feature/*  →  validate + test only (PR feedback loop)
+#   develop    →  validate + test + deploy-dev
+#   main       →  full pipeline; acc and prod gated on manual approval
+#
+# Variable group "de-assessment-kv" is linked to Key Vault kv-de-assessment.
+# It exposes three KV secrets:
+#   - databricks-pat              (SP-owned PAT, rotated by deploy stage)
+#   - databricks-sp-client-id     (deployer SP client ID)
+#   - databricks-sp-client-secret (deployer SP client secret)
+#
+# Non-secret config is declared inline below as pipeline variables.
+# ============================================================
+
+trigger:
+  branches:
+    include:
+      - main
+      - develop
+      - feature/*
+
+pr:
+  branches:
+    include:
+      - main
+      - develop
+
+variables:
+  - group: de-assessment-kv        # provides: databricks-pat, databricks-sp-client-id, databricks-sp-client-secret
+  - name: TF_VERSION
+    value: '1.7.5'
+  - name: ARM_TENANT_ID
+    value: '186c3021-d0e1-4353-b0d9-d9b642e5dd44'
+  - name: ARM_SUBSCRIPTION_ID
+    value: 'a64fd3aa-b704-4942-b259-96843424d4d1'
+  - name: DATABRICKS_HOST
+    value: 'https://adb-7405605920433807.7.azuredatabricks.net'
+  - name: DATABRICKS_WORKSPACE_ID
+    value: '7405605920433807'
+  - name: CATALOG_BASE
+    value: 'de_assessment'
+  - name: NOTEBOOK_BASE_PATH
+    value: '/Users/sef.f@outlook.com/de-assessment/notebooks'
+
+# ============================================================
+# STAGE 1 — Validate (all branches)
+# ============================================================
+stages:
+  - stage: validate
+    displayName: 'Validate Infrastructure'
+    jobs:
+      - job: terraform_validate
+        displayName: 'Terraform Validate & Plan'
+        pool:
+          vmImage: 'ubuntu-latest'
+        steps:
+          - task: TerraformInstaller@1
+            displayName: 'Install Terraform $(TF_VERSION)'
+            inputs:
+              terraformVersion: $(TF_VERSION)
+
+          - script: |
+              export ARM_CLIENT_ID=$(databricks-sp-client-id)
+              export ARM_CLIENT_SECRET=$(databricks-sp-client-secret)
+              export ARM_TENANT_ID=$(ARM_TENANT_ID)
+              export ARM_SUBSCRIPTION_ID=$(ARM_SUBSCRIPTION_ID)
+
+              for module in infra/account infra/azure infra/databricks; do
+                echo "=== Validating $module ==="
+                terraform -chdir=$module init -input=false
+                terraform -chdir=$module validate
+                terraform -chdir=$module plan -input=false \
+                  -var="environment=dev" \
+                  -out=tfplan-dev
+              done
+            displayName: 'Validate all Terraform modules'
+
+# ============================================================
+# STAGE 2 — Test (all branches)
+# ============================================================
+  - stage: test
+    displayName: 'Data Quality Tests'
+    dependsOn: validate
+    condition: succeeded()
+    jobs:
+      - job: run_data_quality_tests
+        displayName: 'Run pytest via Databricks REST API'
+        pool:
+          vmImage: 'ubuntu-latest'
+        steps:
+          - script: |
+              RUN_RESPONSE=$(curl -s -X POST \
+                "$(DATABRICKS_HOST)/api/2.1/jobs/runs/submit" \
+                -H "Authorization: Bearer $(databricks-pat)" \
+                -H "Content-Type: application/json" \
+                -d "{
+                  \"run_name\": \"ci-data-quality-tests-$(Build.BuildId)\",
+                  \"existing_cluster_id\": null,
+                  \"new_cluster\": {
+                    \"spark_version\": \"15.4.x-scala2.12\",
+                    \"node_type_id\": \"Standard_D4s_v3\",
+                    \"num_workers\": 1
+                  },
+                  \"notebook_task\": {
+                    \"notebook_path\": \"$(NOTEBOOK_BASE_PATH)/../tests/test_data_quality\",
+                    \"base_parameters\": {
+                      \"catalog\": \"$(CATALOG_BASE)_dev\"
+                    }
+                  }
+                }")
+
+              RUN_ID=$(echo $RUN_RESPONSE | python3 -c "import sys,json; print(json.load(sys.stdin)['run_id'])")
+              echo "Submitted run ID: $RUN_ID"
+              echo "##vso[task.setvariable variable=RUN_ID]$RUN_ID"
+            displayName: 'Submit test notebook run'
+
+          - script: |
+              while true; do
+                STATE=$(curl -s \
+                  "$(DATABRICKS_HOST)/api/2.1/jobs/runs/get?run_id=$(RUN_ID)" \
+                  -H "Authorization: Bearer $(databricks-pat)" \
+                  | python3 -c "import sys,json; d=json.load(sys.stdin); print(d['state']['life_cycle_state'])")
+                echo "Run state: $STATE"
+                if [[ "$STATE" == "TERMINATED" || "$STATE" == "SKIPPED" || "$STATE" == "INTERNAL_ERROR" ]]; then
+                  break
+                fi
+                sleep 30
+              done
+
+              RESULT=$(curl -s \
+                "$(DATABRICKS_HOST)/api/2.1/jobs/runs/get?run_id=$(RUN_ID)" \
+                -H "Authorization: Bearer $(databricks-pat)" \
+                | python3 -c "import sys,json; d=json.load(sys.stdin); print(d['state']['result_state'])")
+              echo "Result: $RESULT"
+              if [[ "$RESULT" != "SUCCESS" ]]; then
+                echo "##vso[task.logissue type=error]Data quality tests failed"
+                exit 1
+              fi
+            displayName: 'Wait for test results'
+
+# ============================================================
+# STAGE 3 — Deploy Dev (develop + main branches only)
+# ============================================================
+  - stage: deploy_dev
+    displayName: 'Deploy — dev'
+    dependsOn: test
+    condition: |
+      and(
+        succeeded(),
+        in(variables['Build.SourceBranchName'], 'develop', 'main')
+      )
+    variables:
+      ENVIRONMENT: dev
+    jobs:
+      - deployment: deploy_dev
+        displayName: 'Terraform apply — dev'
+        pool:
+          vmImage: 'ubuntu-latest'
+        environment: 'de-assessment-dev'
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+                - checkout: self
+
+                - task: TerraformInstaller@1
+                  inputs:
+                    terraformVersion: $(TF_VERSION)
+
+                - script: |
+                    export ARM_CLIENT_ID=$(databricks-sp-client-id)
+                    export ARM_CLIENT_SECRET=$(databricks-sp-client-secret)
+                    export ARM_TENANT_ID=$(ARM_TENANT_ID)
+                    export ARM_SUBSCRIPTION_ID=$(ARM_SUBSCRIPTION_ID)
+
+                    for module in infra/account infra/azure infra/databricks; do
+                      echo "=== Applying $module ==="
+                      terraform -chdir=$module init -input=false
+                      terraform -chdir=$module apply -auto-approve \
+                        -var="environment=$(ENVIRONMENT)"
+                    done
+                  displayName: 'Terraform apply all modules'
+
+                - script: |
+                    SP_TOKEN=$(curl -s -X POST \
+                      "https://login.microsoftonline.com/$(ARM_TENANT_ID)/oauth2/v2.0/token" \
+                      -d "grant_type=client_credentials&client_id=$(databricks-sp-client-id)&client_secret=$(databricks-sp-client-secret)&scope=2ff814a6-3304-4ab8-85cb-cd0e6f879c1d/.default" \
+                      | python3 -c "import sys,json; print(json.load(sys.stdin).get('access_token',''))")
+
+                    NEW_PAT=$(curl -s -X POST "$(DATABRICKS_HOST)/api/2.0/token/create" \
+                      -H "Authorization: Bearer $SP_TOKEN" \
+                      -H "Content-Type: application/json" \
+                      -d '{"comment":"CI deploy token","lifetime_seconds":7776000}' \
+                      | python3 -c "import sys,json; print(json.load(sys.stdin).get('token_value',''))")
+
+                    az keyvault secret set \
+                      --vault-name kv-de-assessment \
+                      --name databricks-pat \
+                      --value "$NEW_PAT" \
+                      --query name -o tsv
+                  displayName: 'Rotate Databricks PAT in Key Vault'
+                  env:
+                    AZURE_CLIENT_ID: $(databricks-sp-client-id)
+                    AZURE_CLIENT_SECRET: $(databricks-sp-client-secret)
+                    AZURE_TENANT_ID: $(ARM_TENANT_ID)
+
+# ============================================================
+# STAGE 4 — Deploy Acc (main branch only, manual approval)
+# ============================================================
+  - stage: deploy_acc
+    displayName: 'Deploy — acc'
+    dependsOn: deploy_dev
+    condition: |
+      and(
+        succeeded(),
+        eq(variables['Build.SourceBranchName'], 'main')
+      )
+    variables:
+      ENVIRONMENT: acc
+    jobs:
+      - deployment: deploy_acc
+        displayName: 'Terraform apply — acc'
+        pool:
+          vmImage: 'ubuntu-latest'
+        environment: 'de-assessment-acc'
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+                - checkout: self
+
+                - task: TerraformInstaller@1
+                  inputs:
+                    terraformVersion: $(TF_VERSION)
+
+                - script: |
+                    export ARM_CLIENT_ID=$(databricks-sp-client-id)
+                    export ARM_CLIENT_SECRET=$(databricks-sp-client-secret)
+                    export ARM_TENANT_ID=$(ARM_TENANT_ID)
+                    export ARM_SUBSCRIPTION_ID=$(ARM_SUBSCRIPTION_ID)
+
+                    for module in infra/account infra/azure infra/databricks; do
+                      echo "=== Applying $module ==="
+                      terraform -chdir=$module init -input=false
+                      terraform -chdir=$module apply -auto-approve \
+                        -var="environment=$(ENVIRONMENT)"
+                    done
+                  displayName: 'Terraform apply all modules'
+
+# ============================================================
+# STAGE 5 — Deploy Prod (main branch only, manual approval)
+# ============================================================
+  - stage: deploy_prod
+    displayName: 'Deploy — prod'
+    dependsOn: deploy_acc
+    condition: |
+      and(
+        succeeded(),
+        eq(variables['Build.SourceBranchName'], 'main')
+      )
+    variables:
+      ENVIRONMENT: prod
+    jobs:
+      - deployment: deploy_prod
+        displayName: 'Terraform apply — prod'
+        pool:
+          vmImage: 'ubuntu-latest'
+        environment: 'de-assessment-prod'
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+                - checkout: self
+
+                - task: TerraformInstaller@1
+                  inputs:
+                    terraformVersion: $(TF_VERSION)
+
+                - script: |
+                    export ARM_CLIENT_ID=$(databricks-sp-client-id)
+                    export ARM_CLIENT_SECRET=$(databricks-sp-client-secret)
+                    export ARM_TENANT_ID=$(ARM_TENANT_ID)
+                    export ARM_SUBSCRIPTION_ID=$(ARM_SUBSCRIPTION_ID)
+
+                    for module in infra/account infra/azure infra/databricks; do
+                      echo "=== Applying $module ==="
+                      terraform -chdir=$module init -input=false
+                      terraform -chdir=$module apply -auto-approve \
+                        -var="environment=$(ENVIRONMENT)"
+                    done
+                  displayName: 'Terraform apply all modules'
