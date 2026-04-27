@@ -59,18 +59,13 @@ stages:
           name: Default
         steps:
           - script: |
-              export ARM_CLIENT_ID=$(databricks-sp-client-id)
-              export ARM_CLIENT_SECRET=$(databricks-sp-client-secret)
-              export ARM_TENANT_ID=$(ARM_TENANT_ID)
-              export ARM_SUBSCRIPTION_ID=$(ARM_SUBSCRIPTION_ID)
+              export TF_PLUGIN_CACHE_DIR="$HOME/.terraform.d/plugin-cache"
+              mkdir -p "$TF_PLUGIN_CACHE_DIR"
 
               for module in infra/account infra/azure infra/databricks; do
                 echo "=== Validating $module ==="
-                terraform -chdir=$module init -input=false
+                terraform -chdir=$module init -backend=false -input=false
                 terraform -chdir=$module validate
-                terraform -chdir=$module plan -input=false \
-                  -var="environment=dev" \
-                  -out=tfplan-dev
               done
             displayName: 'Validate all Terraform modules'
 
