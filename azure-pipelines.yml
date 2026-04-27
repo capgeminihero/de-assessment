@@ -56,7 +56,7 @@ stages:
       - job: terraform_validate
         displayName: 'Terraform Validate & Plan'
         pool:
-          vmImage: 'ubuntu-latest'
+          name: Default
         steps:
           - script: |
               curl -sLo terraform.zip https://releases.hashicorp.com/terraform/$(TF_VERSION)/terraform_$(TF_VERSION)_linux_amd64.zip
@@ -91,7 +91,7 @@ stages:
       - job: run_data_quality_tests
         displayName: 'Run pytest via Databricks REST API'
         pool:
-          vmImage: 'ubuntu-latest'
+          name: Default
         steps:
           - script: |
               RUN_RESPONSE=$(curl -s -X POST \
@@ -160,7 +160,7 @@ stages:
       - deployment: deploy_dev
         displayName: 'Terraform apply — dev'
         pool:
-          vmImage: 'ubuntu-latest'
+          name: Default
         environment: 'de-assessment-dev'
         strategy:
           runOnce:
@@ -228,7 +228,7 @@ stages:
       - deployment: deploy_acc
         displayName: 'Terraform apply — acc'
         pool:
-          vmImage: 'ubuntu-latest'
+          name: Default
         environment: 'de-assessment-acc'
         strategy:
           runOnce:
@@ -273,7 +273,7 @@ stages:
       - deployment: deploy_prod
         displayName: 'Terraform apply — prod'
         pool:
-          vmImage: 'ubuntu-latest'
+          name: Default
         environment: 'de-assessment-prod'
         strategy:
           runOnce:
