@@ -45,6 +45,10 @@ variables:
     value: "de_assessment"
   - name: NOTEBOOK_BASE_PATH
     value: "/Users/sef.f@outlook.com/de-assessment/notebooks"
+  - name: SKIP_TESTS
+    value: "false"
+  - name: DATABRICKS_ACCOUNT_ID
+    value: "9a47d216-5b37-40b4-8f69-d30cff56f57c"
 
 # ============================================================
 # STAGE 1 — Validate (all branches)
@@ -75,7 +79,7 @@ stages:
   - stage: test
     displayName: "Data Quality Tests"
     dependsOn: validate
-    condition: succeeded()
+    condition: and(succeeded(), ne(variables['SKIP_TESTS'], 'true'))
     jobs:
       - job: run_data_quality_tests
         displayName: "Run integration tests via Databricks python_task"
@@ -170,11 +174,14 @@ stages:
                     export ARM_CLIENT_SECRET=$(databricks-sp-client-secret)
                     export ARM_TENANT_ID=$(ARM_TENANT_ID)
                     export ARM_SUBSCRIPTION_ID=$(ARM_SUBSCRIPTION_ID)
+                    export TF_VAR_databricks_client_id=$(databricks-sp-client-id)
+                    export TF_VAR_databricks_client_secret=$(databricks-sp-client-secret)
+                    export TF_VAR_databricks_account_id=$(DATABRICKS_ACCOUNT_ID)
 
                     for module in infra/account infra/azure infra/databricks; do
                       echo "=== Applying $module ==="
                       terraform -chdir=$module init -input=false
-                      terraform -chdir=$module apply -auto-approve \
+                      terraform -chdir=$module apply -auto-approve -input=false \
                         -var="environment=$(ENVIRONMENT)"
                     done
                   displayName: "Terraform apply all modules"
@@ -232,11 +239,14 @@ stages:
                     export ARM_CLIENT_SECRET=$(databricks-sp-client-secret)
                     export ARM_TENANT_ID=$(ARM_TENANT_ID)
                     export ARM_SUBSCRIPTION_ID=$(ARM_SUBSCRIPTION_ID)
+                    export TF_VAR_databricks_client_id=$(databricks-sp-client-id)
+                    export TF_VAR_databricks_client_secret=$(databricks-sp-client-secret)
+                    export TF_VAR_databricks_account_id=$(DATABRICKS_ACCOUNT_ID)
 
                     for module in infra/account infra/azure infra/databricks; do
                       echo "=== Applying $module ==="
                       terraform -chdir=$module init -input=false
-                      terraform -chdir=$module apply -auto-approve \
+                      terraform -chdir=$module apply -auto-approve -input=false \
                         -var="environment=$(ENVIRONMENT)"
                     done
                   displayName: "Terraform apply all modules"
@@ -271,11 +281,14 @@ stages:
                     export ARM_CLIENT_SECRET=$(databricks-sp-client-secret)
                     export ARM_TENANT_ID=$(ARM_TENANT_ID)
                     export ARM_SUBSCRIPTION_ID=$(ARM_SUBSCRIPTION_ID)
+                    export TF_VAR_databricks_client_id=$(databricks-sp-client-id)
+                    export TF_VAR_databricks_client_secret=$(databricks-sp-client-secret)
+                    export TF_VAR_databricks_account_id=$(DATABRICKS_ACCOUNT_ID)
 
                     for module in infra/account infra/azure infra/databricks; do
                       echo "=== Applying $module ==="
                       terraform -chdir=$module init -input=false
-                      terraform -chdir=$module apply -auto-approve \
+                      terraform -chdir=$module apply -auto-approve -input=false \
                         -var="environment=$(ENVIRONMENT)"
                     done
                   displayName: "Terraform apply all modules"
