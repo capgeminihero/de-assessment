@@ -13,6 +13,14 @@ terraform {
       version = "~> 3.0"
     }
   }
+
+  backend "azurerm" {
+    resource_group_name  = "de-assessment"
+    storage_account_name = "deassessmentd06fabcc"
+    container_name       = "tfstate"
+    key                  = "infra-azure/terraform.tfstate"
+    use_azuread_auth     = true
+  }
 }
 
 provider "azurerm" {

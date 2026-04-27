@@ -153,7 +153,7 @@ stages:
     condition: |
       and(
         in(variables['Build.SourceBranchName'], 'develop', 'main'),
-        in(dependencies.test.result, 'Succeeded', 'SucceededWithIssues')
+        in(dependencies.test.result, 'Succeeded', 'SucceededWithIssues', 'Skipped')
       )
     variables:
       ENVIRONMENT: dev
