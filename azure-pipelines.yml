@@ -85,14 +85,14 @@ stages:
         steps:
           - checkout: self
           - script: |
-              # Upload test file to /Workspace/Shared/ so the SP can read it
+              # Upload notebook to /Shared/ci/ using SOURCE format
               CONTENT=$(base64 -i "$(Build.SourcesDirectory)/notebooks/test_data_quality.py" | tr -d '\n')
               curl -s -X POST \
                 "$(DATABRICKS_HOST)/api/2.0/workspace/import" \
                 -H "Authorization: Bearer $(databricks-pat)" \
                 -H "Content-Type: application/json" \
-                -d "{\"path\": \"/Shared/ci/test_data_quality.py\", \"format\": \"SOURCE\", \"language\": \"PYTHON\", \"content\": \"$CONTENT\", \"overwrite\": true}"
-              echo "Uploaded test file to /Workspace/Shared/ci/test_data_quality.py"
+                -d "{\"path\": \"/Shared/ci/test_data_quality\", \"format\": \"SOURCE\", \"language\": \"PYTHON\", \"content\": \"$CONTENT\", \"overwrite\": true}"
+              echo "Uploaded notebook to /Workspace/Shared/ci/test_data_quality"
 
               RUN_RESPONSE=$(curl -s -X POST \
                 "$(DATABRICKS_HOST)/api/2.1/jobs/runs/submit" \
@@ -106,9 +106,9 @@ stages:
                     \"num_workers\": 1,
                     \"data_security_mode\": \"SINGLE_USER\"
                   },
-                  \"libraries\": [{\"pypi\": {\"package\": \"pytest\"}}],
-                  \"spark_python_task\": {
-                    \"python_file\": \"/Workspace/Shared/ci/test_data_quality.py\"
+                  \"notebook_task\": {
+                    \"notebook_path\": \"/Shared/ci/test_data_quality\",
+                    \"base_parameters\": {\"catalog\": \"de_assessment_dev\"}
                   }
                 }")
 
