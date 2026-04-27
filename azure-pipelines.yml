@@ -96,7 +96,7 @@ stages:
                     \"num_workers\": 1
                   },
                   \"notebook_task\": {
-                    \"notebook_path\": \"$(NOTEBOOK_BASE_PATH)/../tests/test_data_quality\",
+                    \"notebook_path\": \"$(NOTEBOOK_BASE_PATH)/test_data_quality\",
                     \"base_parameters\": {
                       \"catalog\": \"$(CATALOG_BASE)_dev\"
                     }
