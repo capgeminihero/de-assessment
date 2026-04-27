@@ -58,10 +58,11 @@ stages:
         pool:
           vmImage: 'ubuntu-latest'
         steps:
-          - task: TerraformInstaller@1
+          - script: |
+              curl -sLo terraform.zip https://releases.hashicorp.com/terraform/$(TF_VERSION)/terraform_$(TF_VERSION)_linux_amd64.zip
+              unzip -q terraform.zip && sudo mv terraform /usr/local/bin/
+              terraform version
             displayName: 'Install Terraform $(TF_VERSION)'
-            inputs:
-              terraformVersion: $(TF_VERSION)
 
           - script: |
               export ARM_CLIENT_ID=$(databricks-sp-client-id)
@@ -167,9 +168,11 @@ stages:
               steps:
                 - checkout: self
 
-                - task: TerraformInstaller@1
-                  inputs:
-                    terraformVersion: $(TF_VERSION)
+                - script: |
+                    curl -sLo terraform.zip https://releases.hashicorp.com/terraform/$(TF_VERSION)/terraform_$(TF_VERSION)_linux_amd64.zip
+                    unzip -q terraform.zip && sudo mv terraform /usr/local/bin/
+                    terraform version
+                  displayName: 'Install Terraform $(TF_VERSION)'
 
                 - script: |
                     export ARM_CLIENT_ID=$(databricks-sp-client-id)
@@ -233,9 +236,11 @@ stages:
               steps:
                 - checkout: self
 
-                - task: TerraformInstaller@1
-                  inputs:
-                    terraformVersion: $(TF_VERSION)
+                - script: |
+                    curl -sLo terraform.zip https://releases.hashicorp.com/terraform/$(TF_VERSION)/terraform_$(TF_VERSION)_linux_amd64.zip
+                    unzip -q terraform.zip && sudo mv terraform /usr/local/bin/
+                    terraform version
+                  displayName: 'Install Terraform $(TF_VERSION)'
 
                 - script: |
                     export ARM_CLIENT_ID=$(databricks-sp-client-id)
@@ -276,9 +281,11 @@ stages:
               steps:
                 - checkout: self
 
-                - task: TerraformInstaller@1
-                  inputs:
-                    terraformVersion: $(TF_VERSION)
+                - script: |
+                    curl -sLo terraform.zip https://releases.hashicorp.com/terraform/$(TF_VERSION)/terraform_$(TF_VERSION)_linux_amd64.zip
+                    unzip -q terraform.zip && sudo mv terraform /usr/local/bin/
+                    terraform version
+                  displayName: 'Install Terraform $(TF_VERSION)'
 
                 - script: |
                     export ARM_CLIENT_ID=$(databricks-sp-client-id)
