@@ -1,0 +1,27 @@
+# Environment configuration — PROD
+# Used by: databricks.yml targets.prod.variables
+
+catalog: de_assessment_prod
+schema: default
+environment: prod
+num_workers: 4
+log_level: WARNING
+
+cluster:
+  spark_version: 15.4.x-scala2.12
+  node_type_id: Standard_D4s_v3
+  num_workers: 4
+  data_security_mode: SINGLE_USER
+
+secrets:
+  scope: de-assessment-prod
+  databricks_pat_key: databricks-pat
+  sp_client_id_key: databricks-sp-client-id
+  sp_client_secret_key: databricks-sp-client-secret
+
+storage:
+  mount_point: /mnt/de-assessment-prod
+  container: de-assessment-prod
+  storage_account: stdeassessment
+
+notebook_base_path: /Shared/de-assessment/prod
