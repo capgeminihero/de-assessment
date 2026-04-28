@@ -180,7 +180,8 @@ stages:
                       -var="notebook_base_path=$(NOTEBOOK_BASE_PATH)"
                   displayName: "Terraform apply all modules"
 
-                - script: |=$(curl -s -X POST \
+                - script: |
+                    SP_TOKEN=$(curl -s -X POST \
                       "https://login.microsoftonline.com/$(ARM_TENANT_ID)/oauth2/v2.0/token" \
                       -d "grant_type=client_credentials&client_id=$(databricks-sp-client-id)&client_secret=$(databricks-sp-client-secret)&scope=2ff814a6-3304-4ab8-85cb-cd0e6f879c1d/.default" \
                       | python3 -c "import sys,json; print(json.load(sys.stdin).get('access_token',''))")
