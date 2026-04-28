@@ -176,6 +176,8 @@ stages:
 
                 - script: |
                     set -e
+                    # Unset ARM_ vars so Databricks CLI uses OAuth only (not Azure+OAuth conflict)
+                    unset ARM_TENANT_ID ARM_CLIENT_ID ARM_CLIENT_SECRET ARM_SUBSCRIPTION_ID
                     export DATABRICKS_HOST=$(DATABRICKS_HOST)
                     export DATABRICKS_CLIENT_ID=$(databricks-sp-client-id)
                     export DATABRICKS_CLIENT_SECRET=$(databricks-sp-client-secret)
@@ -286,6 +288,8 @@ stages:
 
                 - script: |
                     set -e
+                    # Unset ARM_ vars so Databricks CLI uses OAuth only (not Azure+OAuth conflict)
+                    unset ARM_TENANT_ID ARM_CLIENT_ID ARM_CLIENT_SECRET ARM_SUBSCRIPTION_ID
                     export DATABRICKS_HOST=$(DATABRICKS_HOST)
                     export DATABRICKS_CLIENT_ID=$(databricks-sp-client-id)
                     export DATABRICKS_CLIENT_SECRET=$(databricks-sp-client-secret)
@@ -363,6 +367,8 @@ stages:
 
                 - script: |
                     set -e
+                    # Unset ARM_ vars so Databricks CLI uses OAuth only (not Azure+OAuth conflict)
+                    unset ARM_TENANT_ID ARM_CLIENT_ID ARM_CLIENT_SECRET ARM_SUBSCRIPTION_ID
                     export DATABRICKS_HOST=$(DATABRICKS_HOST)
                     export DATABRICKS_CLIENT_ID=$(databricks-sp-client-id)
                     export DATABRICKS_CLIENT_SECRET=$(databricks-sp-client-secret)
