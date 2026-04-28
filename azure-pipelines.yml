@@ -151,10 +151,7 @@ stages:
     displayName: "Deploy — dev"
     dependsOn: test
     condition: |
-      and(
-        in(variables['Build.SourceBranchName'], 'develop', 'main'),
-        in(dependencies.test.result, 'Succeeded', 'SucceededWithIssues', 'Skipped')
-      )
+      in(dependencies.test.result, 'Succeeded', 'SucceededWithIssues', 'Skipped')
     variables:
       ENVIRONMENT: dev
     jobs:
