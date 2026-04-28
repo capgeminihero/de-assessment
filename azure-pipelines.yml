@@ -176,6 +176,15 @@ stages:
 
                 - script: |
                     set -e
+                    export DATABRICKS_HOST=$(DATABRICKS_HOST)
+                    export DATABRICKS_CLIENT_ID=$(databricks-sp-client-id)
+                    export DATABRICKS_CLIENT_SECRET=$(databricks-sp-client-secret)
+                    databricks bundle validate -t $(ENVIRONMENT)
+                    databricks bundle deploy -t $(ENVIRONMENT)
+                  displayName: "Deploy Databricks Asset Bundle ($(ENVIRONMENT))"
+
+                - script: |
+                    set -e
                     # Read notebook deploy path from environment config
                     NOTEBOOK_DEPLOY_PATH=$(python3 -c "import json; print(json.load(open('configs/$(ENVIRONMENT).json'))['notebook_deploy_path'])")
                     echo "Deploying notebooks to: $NOTEBOOK_DEPLOY_PATH"
@@ -277,6 +286,15 @@ stages:
 
                 - script: |
                     set -e
+                    export DATABRICKS_HOST=$(DATABRICKS_HOST)
+                    export DATABRICKS_CLIENT_ID=$(databricks-sp-client-id)
+                    export DATABRICKS_CLIENT_SECRET=$(databricks-sp-client-secret)
+                    databricks bundle validate -t $(ENVIRONMENT)
+                    databricks bundle deploy -t $(ENVIRONMENT)
+                  displayName: "Deploy Databricks Asset Bundle ($(ENVIRONMENT))"
+
+                - script: |
+                    set -e
                     NOTEBOOK_DEPLOY_PATH=$(python3 -c "import json; print(json.load(open('configs/$(ENVIRONMENT).json'))['notebook_deploy_path'])")
                     echo "Deploying notebooks to: $NOTEBOOK_DEPLOY_PATH"
 
@@ -342,6 +360,15 @@ stages:
             deploy:
               steps:
                 - checkout: self
+
+                - script: |
+                    set -e
+                    export DATABRICKS_HOST=$(DATABRICKS_HOST)
+                    export DATABRICKS_CLIENT_ID=$(databricks-sp-client-id)
+                    export DATABRICKS_CLIENT_SECRET=$(databricks-sp-client-secret)
+                    databricks bundle validate -t $(ENVIRONMENT)
+                    databricks bundle deploy -t $(ENVIRONMENT)
+                  displayName: "Deploy Databricks Asset Bundle ($(ENVIRONMENT))"
 
                 - script: |
                     set -e

@@ -1,0 +1,43 @@
+bundle:
+  name: de-assessment
+
+workspace:
+  host: https://adb-7405605920433807.7.azuredatabricks.net
+
+include:
+  - bundle/resources/*.yml
+
+variables:
+  catalog:
+    description: Unity Catalog name for this environment
+  environment:
+    description: Target environment name (dev/acc/prod)
+  num_workers:
+    description: Number of cluster workers
+  log_level:
+    description: Logging level for notebooks
+
+targets:
+  dev:
+    mode: development
+    variables:
+      catalog: de_assessment_dev
+      environment: dev
+      num_workers: 1
+      log_level: DEBUG
+
+  acc:
+    mode: production
+    variables:
+      catalog: de_assessment_acc
+      environment: acc
+      num_workers: 2
+      log_level: INFO
+
+  prod:
+    mode: production
+    variables:
+      catalog: de_assessment_prod
+      environment: prod
+      num_workers: 4
+      log_level: WARNING
