@@ -39,13 +39,14 @@ de-assessment/
 feature/*  ──►  develop  ──►  main
 ```
 
-| Branch | Purpose | Pipeline stages triggered |
-|---|---|---|
-| `feature/*` | Individual work items | validate + test only |
-| `develop` | Integration / staging | validate + test + deploy_dev |
-| `main` | Production-ready code | Full pipeline (all 5 stages) |
+| Branch      | Purpose               | Pipeline stages triggered    |
+| ----------- | --------------------- | ---------------------------- |
+| `feature/*` | Individual work items | validate + test only         |
+| `develop`   | Integration / staging | validate + test + deploy_dev |
+| `main`      | Production-ready code | Full pipeline (all 5 stages) |
 
 **Workflow:**
+
 1. Engineer creates a `feature/` branch from `develop`
 2. Work is done and a Pull Request is opened into `develop`
 3. Pipeline runs validate + test on the PR (feedback loop)
@@ -64,11 +65,13 @@ validate → test → deploy_dev → deploy_acc → deploy_prod
 ```
 
 ### Stage 1 — Validate
+
 - Runs `terraform validate` on all 3 modules (`account`, `azure`, `databricks`)
 - No backend connection — fast syntax and config check
 - Runs on all branches
 
 ### Stage 2 — Test
+
 - Uploads `test_data_quality.py` to Databricks `/Shared/ci/`
 - Submits a one-time cluster job via the Runs Submit API
 - Polls until complete, fails if tests fail
@@ -76,17 +79,20 @@ validate → test → deploy_dev → deploy_acc → deploy_prod
 - Runs on all branches
 
 ### Stage 3 — Deploy Dev
+
 - Deploys notebooks to `/Shared/de-assessment/dev/` in the Databricks workspace
 - Runs `terraform apply` for `infra/azure` with `environment=dev`
 - Rotates the Databricks PAT in Key Vault
 - Runs on any branch
 
 ### Stage 4 — Deploy Acc
+
 - Deploys notebooks to `/Shared/de-assessment/acc/`
 - Runs `terraform apply` with `environment=acc`
 - Gated: only runs on `main` branch + requires manual approval in ADO environment `de-assessment-acc`
 
 ### Stage 5 — Deploy Prod
+
 - Deploys notebooks to `/Shared/de-assessment/prod/`
 - Runs `terraform apply` with `environment=prod`
 - Gated: only runs after acc **succeeds** (not just skipped) + `main` branch + manual approval in `de-assessment-prod`
@@ -100,6 +106,7 @@ Promotion means **the same notebook code moves through environments** with diffe
 ### How it works
 
 Each deploy stage:
+
 1. Reads `configs/<environment>.json` to get the environment-specific notebook path and catalog
 2. Uploads the notebooks from `notebooks/` to the environment-specific Databricks path
 3. Passes that path into Terraform so ADF points to the correct location
@@ -114,12 +121,12 @@ ADF always runs the notebooks from the path matching the current environment. Th
 
 ### What changes between environments
 
-| Setting | Dev | Acc | Prod |
-|---|---|---|---|
-| Catalog | `de_assessment_dev` | `de_assessment_acc` | `de_assessment_prod` |
+| Setting       | Dev                         | Acc                         | Prod                         |
+| ------------- | --------------------------- | --------------------------- | ---------------------------- |
+| Catalog       | `de_assessment_dev`         | `de_assessment_acc`         | `de_assessment_prod`         |
 | Notebook path | `/Shared/de-assessment/dev` | `/Shared/de-assessment/acc` | `/Shared/de-assessment/prod` |
-| Log level | `DEBUG` | `INFO` | `WARNING` |
-| Data volume | Small/test | Realistic | Live |
+| Log level     | `DEBUG`                     | `INFO`                      | `WARNING`                    |
+| Data volume   | Small/test                  | Realistic                   | Live                         |
 
 **The notebook code itself does not change.** Parameters are injected via the config at deploy time.
 
@@ -142,11 +149,11 @@ No secrets are stored in code or in the repository.
 
 All Azure and Databricks resources are managed as code in `infra/`:
 
-| Module | What it manages |
-|---|---|
-| `infra/azure` | Resource group, ADF, Key Vault, Storage Account, RBAC, Log Analytics |
-| `infra/databricks` | Unity Catalog, schemas, grants, cluster policies |
-| `infra/account` | Databricks account groups and SP registration |
+| Module             | What it manages                                                      |
+| ------------------ | -------------------------------------------------------------------- |
+| `infra/azure`      | Resource group, ADF, Key Vault, Storage Account, RBAC, Log Analytics |
+| `infra/databricks` | Unity Catalog, schemas, grants, cluster policies                     |
+| `infra/account`    | Databricks account groups and SP registration                        |
 
 Remote state is stored in Azure Blob Storage (`deassessmentd06fabcc/tfstate`).
 
