@@ -95,7 +95,7 @@ stages:
           - checkout: self
           - script: |
               # Upload notebook to /Shared/ci/ using SOURCE format
-              CONTENT=$(base64 -i "$(Build.SourcesDirectory)/notebooks/test_data_quality.py" | tr -d '\n')
+              CONTENT=$(base64 -i "$(Build.SourcesDirectory)/tests/test_data_quality.py" | tr -d '\n')
               curl -s -X POST \
                 "$(DATABRICKS_HOST)/api/2.0/workspace/import" \
                 -H "Authorization: Bearer $(databricks-pat)" \
