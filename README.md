@@ -207,30 +207,15 @@ databricks bundle run tvmaze_pipeline -t dev
 
 ### How Databricks Asset Bundles Simplify Enterprise Deployment
 
-**Before DAB** — deploying notebooks and jobs to Databricks required:
-- Manually uploading notebooks via the UI or REST API
-- Managing job JSON definitions separately from the code
-- No version control over cluster configs or job wiring
-- Different ad-hoc scripts per environment with hardcoded paths
+**Databricks Asset Bundles (DAB)** treat your Databricks workspace as code. Instead of manually clicking through the UI or writing ad-hoc deployment scripts, everything — notebooks, jobs, cluster configs, and permissions — is declared in YAML, stored in Git, and deployed with a single command.
 
-**With DAB:**
+**Key enterprise benefits:**
 
-| Concern | Without DAB | With DAB |
-|---|---|---|
-| Notebook deployment | Manual upload or curl scripts | `databricks bundle deploy` syncs automatically |
-| Job definition | JSON via REST API, separate from code | YAML in the repo, versioned alongside notebooks |
-| Environment config | Hardcoded paths and catalog names | Per-target variables in `databricks.yml` |
-| Cluster config | Repeated in every job JSON | Defined once in `resources/clusters/`, reused |
-| CI/CD integration | Custom deploy scripts per stage | Single `bundle validate && bundle deploy -t $(ENVIRONMENT)` |
-| Rollback | Manual | Re-deploy previous git commit |
-| Permissions | Set manually in UI | Declared in YAML, applied on every deploy |
-
-**In practice** this means a data engineer can:
-1. Edit a notebook locally
-2. Push to a feature branch
-3. The pipeline automatically validates, deploys to dev, and promotes to acc/prod on approval — with no manual steps and no risk of environment drift.
-
-The entire pipeline state (notebooks, jobs, clusters, permissions) is declared in code, reviewable in PRs, and reproducible on any environment from a single command.
+- **Reproducibility** — any environment (dev/acc/prod) can be recreated from the same codebase with `bundle deploy -t <env>`
+- **Environment parity** — catalog names, cluster sizes, and log levels are parameterised per target; the code never changes
+- **Version control** — job definitions live alongside the notebooks that power them, so changes are reviewable in PRs and rollbacks are a `git revert`
+- **CI/CD native** — `bundle validate` + `bundle deploy` replace entire custom deploy scripts; one pipeline step covers everything
+- **No config drift** — every deploy is idempotent and declarative; the workspace always reflects what's in Git
 
 ---
 
