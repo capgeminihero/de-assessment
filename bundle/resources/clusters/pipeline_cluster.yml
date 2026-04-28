@@ -1,0 +1,18 @@
+# Cluster configuration for the TVMaze pipeline
+# This interactive cluster is available for ad-hoc exploration and debugging.
+# Job runs use ephemeral job clusters defined in bundle/resources/jobs/tvmaze_pipeline.yml.
+
+resources:
+  clusters:
+    pipeline_cluster:
+      cluster_name: "tvmaze-pipeline-${var.environment}"
+      spark_version: 15.4.x-scala2.12
+      node_type_id: Standard_D4s_v3
+      num_workers: ${var.num_workers}
+      data_security_mode: SINGLE_USER
+      spark_conf:
+        spark.databricks.delta.preview.enabled: "true"
+      custom_tags:
+        environment: ${var.environment}
+        project: de-assessment
+        managed_by: databricks-asset-bundles

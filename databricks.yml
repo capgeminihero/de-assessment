@@ -5,7 +5,7 @@ workspace:
   host: https://adb-7405605920433807.7.azuredatabricks.net
 
 include:
-  - bundle/resources/*.yml
+  - bundle/resources/jobs/*.yml
 
 variables:
   catalog:

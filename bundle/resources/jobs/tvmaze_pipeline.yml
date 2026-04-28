@@ -19,7 +19,7 @@ resources:
           description: "Ingest raw TVMaze data from API to Delta bronze layer"
           job_cluster_key: pipeline_cluster
           notebook_task:
-            notebook_path: ../../notebooks/01_bronze_ingestion.ipynb
+            notebook_path: ../../../notebooks/01_bronze_ingestion.ipynb
             base_parameters:
               catalog: ${var.catalog}
               environment: ${var.environment}
@@ -31,7 +31,7 @@ resources:
             - task_key: bronze_ingestion
           job_cluster_key: pipeline_cluster
           notebook_task:
-            notebook_path: ../../notebooks/02_silver_transformation.ipynb
+            notebook_path: ../../../notebooks/02_silver_transformation.ipynb
             base_parameters:
               catalog: ${var.catalog}
               environment: ${var.environment}
@@ -43,7 +43,7 @@ resources:
             - task_key: silver_transformation
           job_cluster_key: pipeline_cluster
           notebook_task:
-            notebook_path: ../../notebooks/03_gold_aggregation.ipynb
+            notebook_path: ../../../notebooks/03_gold_aggregation.ipynb
             base_parameters:
               catalog: ${var.catalog}
               environment: ${var.environment}

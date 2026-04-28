@@ -1,0 +1,27 @@
+# Environment configuration — ACC
+# Used by: databricks.yml targets.acc.variables
+
+catalog: de_assessment_acc
+schema: default
+environment: acc
+num_workers: 2
+log_level: INFO
+
+cluster:
+  spark_version: 15.4.x-scala2.12
+  node_type_id: Standard_D4s_v3
+  num_workers: 2
+  data_security_mode: SINGLE_USER
+
+secrets:
+  scope: de-assessment-acc
+  databricks_pat_key: databricks-pat
+  sp_client_id_key: databricks-sp-client-id
+  sp_client_secret_key: databricks-sp-client-secret
+
+storage:
+  mount_point: /mnt/de-assessment-acc
+  container: de-assessment-acc
+  storage_account: stdeassessment
+
+notebook_base_path: /Shared/de-assessment/acc
