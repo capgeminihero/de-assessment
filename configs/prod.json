@@ -1,0 +1,8 @@
+{
+  "environment": "prod",
+  "catalog": "de_assessment_prod",
+  "notebook_deploy_path": "/Shared/de-assessment/prod",
+  "storage_path": "/mnt/de-assessment-prod/raw",
+  "log_level": "WARNING",
+  "notes": "Production environment — real data, only promoted after acc validation"
+}

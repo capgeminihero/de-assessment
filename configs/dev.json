@@ -1,0 +1,8 @@
+{
+  "environment": "dev",
+  "catalog": "de_assessment_dev",
+  "notebook_deploy_path": "/Shared/de-assessment/dev",
+  "storage_path": "/mnt/de-assessment-dev/raw",
+  "log_level": "DEBUG",
+  "notes": "Development environment — small/test data, safe to experiment"
+}
