@@ -14,20 +14,35 @@ de-assessment/
 │   ├── 02_silver_transformation.ipynb  # Cleaning and typing
 │   └── 03_gold_aggregation.ipynb       # Business-level aggregations and fact table
 │
-├── configs/                            # Environment-specific configuration (no secrets)
-│   ├── dev.json                        # Dev: small/test data, DEBUG logging
-│   ├── acc.json                        # Acc: realistic data, validation gate
-│   └── prod.json                       # Prod: live data, WARNING logging only
+├── bundle/                             # Databricks Asset Bundle (Part 8)
+│   ├── configs/
+│   │   ├── dev.yaml                    # Dev: catalog, cluster size, secrets, storage
+│   │   ├── acc.yaml                    # Acc: larger cluster, INFO logging
+│   │   └── prod.yaml                   # Prod: max workers, WARNING logging only
+│   └── resources/
+│       ├── jobs/
+│       │   └── tvmaze_pipeline.yml     # 3-task job definition (bronze → silver → gold)
+│       └── clusters/
+│           └── pipeline_cluster.yml   # Reusable cluster definition
+│
+├── configs/                            # ADF environment configs (no secrets)
+│   ├── dev.json
+│   ├── acc.json
+│   └── prod.json
 │
 ├── infra/                              # Terraform IaC — all infrastructure as code
 │   ├── account/                        # Databricks account-level resources (groups, users)
 │   ├── azure/                          # Azure resources (ADF, Key Vault, Storage, RBAC)
 │   └── databricks/                     # Workspace-level resources (catalogs, grants, clusters)
 │
-├── deliverables/                       # Screenshots and evidence per part
-│   ├── part1/ … part6/
+├── tests/                              # Data quality tests
+│   └── test_data_quality.py
 │
-├── azure-pipelines.yml                 # Azure DevOps CI/CD pipeline
+├── deliverables/                       # Screenshots and evidence per part
+│   ├── part1/ … part8/
+│
+├── databricks.yml                      # DAB root config — targets: dev / acc / prod
+├── azure-pipelines.yml                 # Azure DevOps CI/CD pipeline (5 stages)
 └── README.md
 ```
 
@@ -159,19 +174,93 @@ Remote state is stored in Azure Blob Storage (`deassessmentd06fabcc/tfstate`).
 
 ---
 
-## Running Locally
+## Part 8 — Databricks Asset Bundles
+
+### Bundle Structure
+
+```
+bundle/
+├── configs/
+│   ├── dev.yaml     # Dev environment: 1 worker, DEBUG logging, de_assessment_dev catalog
+│   ├── acc.yaml     # Acc environment: 2 workers, INFO logging, de_assessment_acc catalog
+│   └── prod.yaml    # Prod environment: 4 workers, WARNING logging, de_assessment_prod catalog
+└── resources/
+    ├── jobs/
+    │   └── tvmaze_pipeline.yml   # 3-task job: bronze → silver → gold
+    └── clusters/
+        └── pipeline_cluster.yml  # Cluster definition referenced by the job
+databricks.yml                    # Root bundle config with targets for dev / acc / prod
+```
+
+### How to Deploy
 
 ```bash
-# Authenticate
+# Validate (no changes made)
+databricks bundle validate -t dev
+
+# Deploy notebooks + job to Databricks workspace
+databricks bundle deploy -t dev
+
+# Run the pipeline end-to-end
+databricks bundle run tvmaze_pipeline -t dev
+```
+
+### How Databricks Asset Bundles Simplify Enterprise Deployment
+
+**Before DAB** — deploying notebooks and jobs to Databricks required:
+- Manually uploading notebooks via the UI or REST API
+- Managing job JSON definitions separately from the code
+- No version control over cluster configs or job wiring
+- Different ad-hoc scripts per environment with hardcoded paths
+
+**With DAB:**
+
+| Concern | Without DAB | With DAB |
+|---|---|---|
+| Notebook deployment | Manual upload or curl scripts | `databricks bundle deploy` syncs automatically |
+| Job definition | JSON via REST API, separate from code | YAML in the repo, versioned alongside notebooks |
+| Environment config | Hardcoded paths and catalog names | Per-target variables in `databricks.yml` |
+| Cluster config | Repeated in every job JSON | Defined once in `resources/clusters/`, reused |
+| CI/CD integration | Custom deploy scripts per stage | Single `bundle validate && bundle deploy -t $(ENVIRONMENT)` |
+| Rollback | Manual | Re-deploy previous git commit |
+| Permissions | Set manually in UI | Declared in YAML, applied on every deploy |
+
+**In practice** this means a data engineer can:
+1. Edit a notebook locally
+2. Push to a feature branch
+3. The pipeline automatically validates, deploys to dev, and promotes to acc/prod on approval — with no manual steps and no risk of environment drift.
+
+The entire pipeline state (notebooks, jobs, clusters, permissions) is declared in code, reviewable in PRs, and reproducible on any environment from a single command.
+
+---
+
+## Infrastructure as Code
+
+All Azure and Databricks resources are fully managed via Terraform. No manual portal configuration is required. See `infra/` for the full module breakdown.
+
+---
+
+## Quickstart
+
+```bash
+# 1. Authenticate
 az login
 
-# Apply Azure infrastructure
+# 2. Apply Azure infrastructure (ADF, Key Vault, Storage, RBAC)
 cd infra/azure
 terraform init
-terraform apply -var="deployer_sp_object_id=<your-object-id>"
+terraform apply -var="deployer_sp_object_id=<your-sp-object-id>"
 
-# Apply Databricks resources
+# 3. Apply Databricks workspace resources (catalogs, grants, clusters)
 cd ../databricks
 terraform init
 terraform apply
+
+# 4. Validate and deploy the Asset Bundle to dev
+cd ../..
+databricks bundle validate -t dev
+databricks bundle deploy -t dev
+
+# 5. Run the TVMaze pipeline end-to-end
+databricks bundle run tvmaze_pipeline -t dev
 ```
