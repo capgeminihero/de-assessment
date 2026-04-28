@@ -219,7 +219,7 @@ stages:
     dependsOn: deploy_dev
     condition: |
       and(
-        succeeded(),
+        in(dependencies.deploy_dev.result, 'Succeeded', 'SucceededWithIssues', 'Skipped'),
         eq(variables['Build.SourceBranchName'], 'main')
       )
     variables:
@@ -259,7 +259,7 @@ stages:
     dependsOn: deploy_acc
     condition: |
       and(
-        succeeded(),
+        in(dependencies.deploy_acc.result, 'Succeeded', 'SucceededWithIssues', 'Skipped'),
         eq(variables['Build.SourceBranchName'], 'main')
       )
     variables:
