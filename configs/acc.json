@@ -1,0 +1,8 @@
+{
+  "environment": "acc",
+  "catalog": "de_assessment_acc",
+  "notebook_deploy_path": "/Shared/de-assessment/acc",
+  "storage_path": "/mnt/de-assessment-acc/raw",
+  "log_level": "INFO",
+  "notes": "Acceptance environment — realistic data, validation before production promotion"
+}

@@ -43,8 +43,6 @@ variables:
     value: "7405605920433807"
   - name: CATALOG_BASE
     value: "de_assessment"
-  - name: NOTEBOOK_BASE_PATH
-    value: "/Users/sef.f@outlook.com/de-assessment/notebooks"
   - name: SKIP_TESTS
     value: "false"
   - name: DATABRICKS_ACCOUNT_ID
@@ -170,6 +168,39 @@ stages:
 
                 - script: |
                     set -e
+                    # Read notebook deploy path from environment config
+                    NOTEBOOK_DEPLOY_PATH=$(python3 -c "import json; print(json.load(open('configs/$(ENVIRONMENT).json'))['notebook_deploy_path'])")
+                    echo "Deploying notebooks to: $NOTEBOOK_DEPLOY_PATH"
+
+                    # Acquire SP token for Databricks
+                    SP_TOKEN=$(curl -s -X POST \
+                      "https://login.microsoftonline.com/$(ARM_TENANT_ID)/oauth2/v2.0/token" \
+                      -d "grant_type=client_credentials&client_id=$(databricks-sp-client-id)&client_secret=$(databricks-sp-client-secret)&scope=2ff814a6-3304-4ab8-85cb-cd0e6f879c1d/.default" \
+                      | python3 -c "import sys,json; print(json.load(sys.stdin).get('access_token',''))")
+
+                    # Create destination folder
+                    curl -s -X POST "$(DATABRICKS_HOST)/api/2.0/workspace/mkdirs" \
+                      -H "Authorization: Bearer $SP_TOKEN" \
+                      -H "Content-Type: application/json" \
+                      -d "{\"path\": \"$NOTEBOOK_DEPLOY_PATH\"}"
+
+                    # Upload each notebook
+                    for nb in notebooks/01_bronze_ingestion notebooks/02_silver_transformation notebooks/03_gold_aggregation; do
+                      NAME=$(basename $nb)
+                      CONTENT=$(base64 -i "${nb}.ipynb" | tr -d '\n')
+                      curl -s -X POST "$(DATABRICKS_HOST)/api/2.0/workspace/import" \
+                        -H "Authorization: Bearer $SP_TOKEN" \
+                        -H "Content-Type: application/json" \
+                        -d "{\"path\": \"$NOTEBOOK_DEPLOY_PATH/$NAME\", \"format\": \"JUPYTER\", \"content\": \"$CONTENT\", \"overwrite\": true}"
+                      echo "Uploaded $NAME to $NOTEBOOK_DEPLOY_PATH"
+                    done
+
+                    # Export path for Terraform step
+                    echo "##vso[task.setvariable variable=NOTEBOOK_BASE_PATH]$NOTEBOOK_DEPLOY_PATH"
+                  displayName: "Deploy notebooks to Databricks ($(ENVIRONMENT))"
+
+                - script: |
+                    set -e
                     export ARM_CLIENT_ID=$(databricks-sp-client-id)
                     export ARM_CLIENT_SECRET=$(databricks-sp-client-secret)
                     export ARM_TENANT_ID=$(ARM_TENANT_ID)
@@ -238,6 +269,34 @@ stages:
 
                 - script: |
                     set -e
+                    NOTEBOOK_DEPLOY_PATH=$(python3 -c "import json; print(json.load(open('configs/$(ENVIRONMENT).json'))['notebook_deploy_path'])")
+                    echo "Deploying notebooks to: $NOTEBOOK_DEPLOY_PATH"
+
+                    SP_TOKEN=$(curl -s -X POST \
+                      "https://login.microsoftonline.com/$(ARM_TENANT_ID)/oauth2/v2.0/token" \
+                      -d "grant_type=client_credentials&client_id=$(databricks-sp-client-id)&client_secret=$(databricks-sp-client-secret)&scope=2ff814a6-3304-4ab8-85cb-cd0e6f879c1d/.default" \
+                      | python3 -c "import sys,json; print(json.load(sys.stdin).get('access_token',''))")
+
+                    curl -s -X POST "$(DATABRICKS_HOST)/api/2.0/workspace/mkdirs" \
+                      -H "Authorization: Bearer $SP_TOKEN" \
+                      -H "Content-Type: application/json" \
+                      -d "{\"path\": \"$NOTEBOOK_DEPLOY_PATH\"}"
+
+                    for nb in notebooks/01_bronze_ingestion notebooks/02_silver_transformation notebooks/03_gold_aggregation; do
+                      NAME=$(basename $nb)
+                      CONTENT=$(base64 -i "${nb}.ipynb" | tr -d '\n')
+                      curl -s -X POST "$(DATABRICKS_HOST)/api/2.0/workspace/import" \
+                        -H "Authorization: Bearer $SP_TOKEN" \
+                        -H "Content-Type: application/json" \
+                        -d "{\"path\": \"$NOTEBOOK_DEPLOY_PATH/$NAME\", \"format\": \"JUPYTER\", \"content\": \"$CONTENT\", \"overwrite\": true}"
+                      echo "Uploaded $NAME to $NOTEBOOK_DEPLOY_PATH"
+                    done
+
+                    echo "##vso[task.setvariable variable=NOTEBOOK_BASE_PATH]$NOTEBOOK_DEPLOY_PATH"
+                  displayName: "Deploy notebooks to Databricks ($(ENVIRONMENT))"
+
+                - script: |
+                    set -e
                     export ARM_CLIENT_ID=$(databricks-sp-client-id)
                     export ARM_CLIENT_SECRET=$(databricks-sp-client-secret)
                     export ARM_TENANT_ID=$(ARM_TENANT_ID)
@@ -275,6 +334,34 @@ stages:
             deploy:
               steps:
                 - checkout: self
+
+                - script: |
+                    set -e
+                    NOTEBOOK_DEPLOY_PATH=$(python3 -c "import json; print(json.load(open('configs/$(ENVIRONMENT).json'))['notebook_deploy_path'])")
+                    echo "Deploying notebooks to: $NOTEBOOK_DEPLOY_PATH"
+
+                    SP_TOKEN=$(curl -s -X POST \
+                      "https://login.microsoftonline.com/$(ARM_TENANT_ID)/oauth2/v2.0/token" \
+                      -d "grant_type=client_credentials&client_id=$(databricks-sp-client-id)&client_secret=$(databricks-sp-client-secret)&scope=2ff814a6-3304-4ab8-85cb-cd0e6f879c1d/.default" \
+                      | python3 -c "import sys,json; print(json.load(sys.stdin).get('access_token',''))")
+
+                    curl -s -X POST "$(DATABRICKS_HOST)/api/2.0/workspace/mkdirs" \
+                      -H "Authorization: Bearer $SP_TOKEN" \
+                      -H "Content-Type: application/json" \
+                      -d "{\"path\": \"$NOTEBOOK_DEPLOY_PATH\"}"
+
+                    for nb in notebooks/01_bronze_ingestion notebooks/02_silver_transformation notebooks/03_gold_aggregation; do
+                      NAME=$(basename $nb)
+                      CONTENT=$(base64 -i "${nb}.ipynb" | tr -d '\n')
+                      curl -s -X POST "$(DATABRICKS_HOST)/api/2.0/workspace/import" \
+                        -H "Authorization: Bearer $SP_TOKEN" \
+                        -H "Content-Type: application/json" \
+                        -d "{\"path\": \"$NOTEBOOK_DEPLOY_PATH/$NAME\", \"format\": \"JUPYTER\", \"content\": \"$CONTENT\", \"overwrite\": true}"
+                      echo "Uploaded $NAME to $NOTEBOOK_DEPLOY_PATH"
+                    done
+
+                    echo "##vso[task.setvariable variable=NOTEBOOK_BASE_PATH]$NOTEBOOK_DEPLOY_PATH"
+                  displayName: "Deploy notebooks to Databricks ($(ENVIRONMENT))"
 
                 - script: |
                     set -e
