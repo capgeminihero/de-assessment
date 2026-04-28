@@ -270,12 +270,16 @@ resource "azurerm_role_assignment" "adf_kv" {
   principal_id         = azurerm_data_factory.adf.identity[0].principal_id
 }
 
-# Allow Terraform deployer to write secrets into Key Vault (required for az keyvault secret set
-# and for azurerm_key_vault_secret resources; safe on RBAC-enabled vaults)
+locals {
+  deployer_object_id = var.deployer_sp_object_id != "" ? var.deployer_sp_object_id : data.azurerm_client_config.current.object_id
+}
+
+# Allow the Terraform deployer to write secrets into Key Vault.
+# CI/CD passes -var="deployer_sp_object_id=<SP object ID>"; local runs fall back to current caller.
 resource "azurerm_role_assignment" "deployer_kv_officer" {
   scope                = azurerm_key_vault.kv.id
   role_definition_name = "Key Vault Secrets Officer"
-  principal_id         = data.azurerm_client_config.current.object_id
+  principal_id         = local.deployer_object_id
 }
 
 # ── ADF: Key Vault Linked Service ──────────────────────────────────────────────
@@ -618,3 +622,5 @@ output "log_analytics_workspace_id" {
 output "entra_dev_team_object_id" {
   value = data.azuread_group.dev_team.object_id
 }
+
+

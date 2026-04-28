@@ -49,6 +49,8 @@ variables:
     value: "false"
   - name: DATABRICKS_ACCOUNT_ID
     value: "9a47d216-5b37-40b4-8f69-d30cff56f57c"
+  - name: DEPLOYER_SP_OBJECT_ID
+    value: "58914ffd-5536-413b-8f81-4b01bc5b0a01"
 
 # ============================================================
 # STAGE 1 — Validate (all branches)
@@ -177,7 +179,8 @@ stages:
                     terraform -chdir=infra/azure init -input=false
                     terraform -chdir=infra/azure apply -auto-approve -input=false \
                       -var="environment=$(ENVIRONMENT)" \
-                      -var="notebook_base_path=$(NOTEBOOK_BASE_PATH)"
+                      -var="notebook_base_path=$(NOTEBOOK_BASE_PATH)" \
+                      -var="deployer_sp_object_id=$(DEPLOYER_SP_OBJECT_ID)"
                   displayName: "Terraform apply all modules"
 
                 - script: |
@@ -239,7 +242,8 @@ stages:
                     terraform -chdir=infra/azure init -input=false
                     terraform -chdir=infra/azure apply -auto-approve -input=false \
                       -var="environment=$(ENVIRONMENT)" \
-                      -var="notebook_base_path=$(NOTEBOOK_BASE_PATH)"
+                      -var="notebook_base_path=$(NOTEBOOK_BASE_PATH)" \
+                      -var="deployer_sp_object_id=$(DEPLOYER_SP_OBJECT_ID)"
                   displayName: "Terraform apply all modules"
 
   # ============================================================
@@ -278,5 +282,6 @@ stages:
                     terraform -chdir=infra/azure init -input=false
                     terraform -chdir=infra/azure apply -auto-approve -input=false \
                       -var="environment=$(ENVIRONMENT)" \
-                      -var="notebook_base_path=$(NOTEBOOK_BASE_PATH)"
+                      -var="notebook_base_path=$(NOTEBOOK_BASE_PATH)" \
+                      -var="deployer_sp_object_id=$(DEPLOYER_SP_OBJECT_ID)"
                   displayName: "Terraform apply all modules"

@@ -25,3 +25,9 @@ variable "notebook_base_path" {
   type        = string
   default     = "/Shared"
 }
+
+variable "deployer_sp_object_id" {
+  description = "Object ID of the SP that runs Terraform in CI/CD. Falls back to the current caller when empty (local runs)."
+  type        = string
+  default     = ""
+}
