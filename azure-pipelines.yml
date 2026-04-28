@@ -259,7 +259,7 @@ stages:
     dependsOn: deploy_acc
     condition: |
       and(
-        in(dependencies.deploy_acc.result, 'Succeeded', 'SucceededWithIssues', 'Skipped'),
+        in(dependencies.deploy_acc.result, 'Succeeded', 'SucceededWithIssues'),
         eq(variables['Build.SourceBranchName'], 'main')
       )
     variables:
