@@ -184,6 +184,15 @@ stages:
                   displayName: "Terraform apply all modules"
 
                 - script: |
+                    set -e
+                    # Log az CLI in as the deployer SP so all subsequent az commands run as the SP
+                    az login --service-principal \
+                      --username "$(databricks-sp-client-id)" \
+                      --password "$(databricks-sp-client-secret)" \
+                      --tenant "$(ARM_TENANT_ID)" \
+                      --output none
+
+                    # Acquire a Databricks token for the SP
                     SP_TOKEN=$(curl -s -X POST \
                       "https://login.microsoftonline.com/$(ARM_TENANT_ID)/oauth2/v2.0/token" \
                       -d "grant_type=client_credentials&client_id=$(databricks-sp-client-id)&client_secret=$(databricks-sp-client-secret)&scope=2ff814a6-3304-4ab8-85cb-cd0e6f879c1d/.default" \
@@ -201,10 +210,6 @@ stages:
                       --value "$NEW_PAT" \
                       --query name -o tsv
                   displayName: "Rotate Databricks PAT in Key Vault"
-                  env:
-                    AZURE_CLIENT_ID: $(databricks-sp-client-id)
-                    AZURE_CLIENT_SECRET: $(databricks-sp-client-secret)
-                    AZURE_TENANT_ID: $(ARM_TENANT_ID)
 
   # ============================================================
   # STAGE 4 — Deploy Acc (main branch only, manual approval)
