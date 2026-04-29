@@ -205,7 +205,7 @@ databricks bundle deploy -t dev
 databricks bundle run tvmaze_pipeline -t dev
 ```
 
-### How Databricks Asset Bundles Simplify Enterprise Deployment
+### Explanation How Databricks Asset Bundles Simplify Enterprise Deployment
 
 **Databricks Asset Bundles (DAB)** treat your Databricks workspace as code. Instead of manually clicking through the UI or writing ad-hoc deployment scripts, everything — notebooks, jobs, cluster configs, and permissions — is declared in YAML, stored in Git, and deployed with a single command.
 
